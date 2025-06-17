@@ -1,1 +1,0 @@
-replace this README with input files for regular waves cases
