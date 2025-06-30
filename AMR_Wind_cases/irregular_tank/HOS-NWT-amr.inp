@@ -21,8 +21,8 @@ transport.laminar_prandtl = 0.7
 transport.turbulent_prandtl = 0.3333
 turbulence.model = Laminar
 
-transport.viscosity_fluid1=1e-3
-transport.viscosity_fluid2=1e-5
+transport.viscosity_fluid1=0.
+transport.viscosity_fluid2=0.
 
 incflo.physics = MultiPhase OceanWaves 
 OceanWaves.label = Wave1
