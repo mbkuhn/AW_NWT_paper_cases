@@ -49,7 +49,7 @@ MultiPhase.verbose=0
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell              = 64 64 16
-amr.max_level = 1
+amr.max_level = 2
 tagging.labels = sr         
 tagging.sr.type = CartBoxRefinement                         
 tagging.sr.static_refinement_def = static_box.refine

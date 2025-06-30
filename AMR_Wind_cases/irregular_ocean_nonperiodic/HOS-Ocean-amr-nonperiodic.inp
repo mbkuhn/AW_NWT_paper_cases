@@ -31,7 +31,7 @@ OceanWaves.W2A1.number_interp_above_surface = 5
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
 #.......................................#
-incflo.use_godunov = 1
+incflo.use_godunov = 2
 incflo.godunov_type = weno_z
 incflo.mflux_type = minmod
 incflo.do_initial_proj = false
