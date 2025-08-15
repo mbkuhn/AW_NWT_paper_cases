@@ -1,0 +1,95 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   1600     # Max (simulated) time to evolve
+time.max_step                =   -1          # Max number of time steps
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.initial_dt = -0.1
+time.fixed_dt         =   0.1        # Use this constant dt if > 0 # 1 was pushing things too much and it would just not converge
+time.cfl              =   0.95         # CFL factor
+time.use_force_cfl= false
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+time.plot_interval            =  100       # Steps between plot files
+time.checkpoint_interval      =  50       # Steps between checkpoint files
+io.restart_file               = chk03300
+io.output_default_fields = 0
+io.outputs = density velocity p vof ow_levelset ow_velocity ow_vof
+incflo.initial_iterations = 0
+incflo.do_initial_proj = 0
+OceanWaves.label = "W2A1"
+OceanWaves.W2A1.type = "W2AWaves"
+OceanWaves.W2A1.HOS_modes_filename = "/scratch/mpolimen/exa_home/runs/HOS_Ocean_AW/periodic/HOS/modes_HOS_SWENSE.dat"
+OceanWaves.W2A1.relax_zone_gen_length=750
+OceanWaves.W2A1.relax_zone_out_length=750
+OceanWaves.W2A1.number_interp_points_in_z = 70
+OceanWaves.W2A1.interp_spacing_at_surface = 10.
+OceanWaves.W2A1.number_interp_above_surface = 15
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.use_godunov = 1
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=0.0
+transport.viscosity_fluid2=0.0
+transport.laminar_prandtl = 0.7
+transport.turbulent_prandtl = 0.3333
+turbulence.model = Laminar
+
+incflo.physics = MultiPhase OceanWaves
+MultiPhase.density_fluid1=1000
+MultiPhase.density_fluid2=1.25
+ICNS.source_terms = GravityForcing 
+MultiPhase.verbose=0
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 512 512 128
+amr.blocking_factor = 8
+amr.max_level = 2
+tagging.labels = sr         
+tagging.sr.type = CartBoxRefinement                         
+tagging.sr.static_refinement_def = static_box.refine
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =     0.0  0.0  -1000   # Lo corner coordinates
+geometry.prob_hi        =     9.3717632253682877E+03 9.3717632253682877E+03 200  # Hi corner coordinates
+geometry.is_periodic    =     1     1     0   # Periodicity x y z (0/1)
+
+zlo.type =   "slip_wall"
+zhi.type =   "slip_wall"
+zhi.density_type = "zero_gradient"
+zlo.density_type = "zero_gradient"
+zlo.vof_type = "zero_gradient"
+zhi.vof_type = "zero_gradient"
+
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#           POST-PROCESSING             #
+#.......................................#
+incflo.post_processing = sampling ke we
+
+sampling.output_frequency = 10
+sampling.output_format = native
+sampling.labels = fs
+sampling.fields = vof velocity
+sampling.fs.type = FreeSurfaceSampler
+
+sampling.fs.plane_num_points = 256 256
+sampling.fs.plane_start = 18.3042250495 18.3042250495 0.0 # smallest dx=36.6084500991, so offest = 36.6084500991/2 = 18.3042250495, to sample in the middle of every cell
+sampling.fs.plane_end = 9353.459000318788 9353.459000318788 0.0
+
+ke.type  = KineticEnergy
+ke.output_interval = 10
+
+we.type  = WaveEnergy
+we.output_interval = 10
