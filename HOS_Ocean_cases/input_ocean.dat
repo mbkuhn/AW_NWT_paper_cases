@@ -2,8 +2,8 @@
 Restart previous computation                     :: i_restart     :: 0
 Choice of computed case (definition of wave)     :: i_case        :: 3
 --- Geometry of the horizontal domain
-Length in x-direction                            :: xlen          :: 40.0
-Length in y-direction                            :: ylen          :: 40.0
+Length in x-direction                            :: xlen          :: 20.0
+Length in y-direction                            :: ylen          :: 20.0
 --- Relaxation zones
 Use of absorption/generation                     :: i_rlx         :: 0
 Type of zones                                    :: i_abs         :: 1
