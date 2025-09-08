@@ -19,7 +19,6 @@ io.outputs = density velocity p vof ow_levelset ow_velocity w2a_levelset w2a_vel
 OceanWaves.label = W2A1
 OceanWaves.W2A1.type = W2AWaves
 OceanWaves.W2A1.HOS_modes_filename = /Users/mkuhn/testruns_data/HOS/Results_gdeskos_eagle/modes_HOS_SWENSE.dat
-OceanWaves.W2A1.HOS_init_time = 370
 OceanWaves.W2A1.relax_zone_gen_length=900
 OceanWaves.W2A1.numerical_beach_length=900
 OceanWaves.W2A1.numerical_beach_length_factor=2
