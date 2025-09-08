@@ -8,7 +8,7 @@ time.max_step                =   0
 #         TIME STEP COMPUTATION         #
 #.......................................#
 time.fixed_dt         =   1.0        # Use this constant dt if > 0
-time.cfl              =   0.45         # CFL factor
+time.cfl              =   0.95         # CFL factor
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #            INPUT AND OUTPUT           #
 #.......................................#
@@ -26,7 +26,7 @@ OceanWaves.W2A1.relax_zone_length_y=240
 # These variables should change with resolution in z
 OceanWaves.W2A1.number_interp_points_in_z = 50
 OceanWaves.W2A1.interp_spacing_at_surface = 1.
-OceanWaves.W2A1.number_interp_above_surface = 12
+OceanWaves.W2A1.number_interp_above_surface = 7
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -61,10 +61,10 @@ tagging.refine0.shapes = b1
 tagging.refine0.min_level  = 0
 tagging.refine0.max_level  = 2
 tagging.refine0.b1.type = box                 
-tagging.refine0.b1.origin = 0 0 -5
+tagging.refine0.b1.origin = 0 0 -6
 tagging.refine0.b1.xaxis = 1500. 0.0 0.0
 tagging.refine0.b1.yaxis = 0.0 1500. 0.0
-tagging.refine0.b1.zaxis = 0.0 0.0   10.
+tagging.refine0.b1.zaxis = 0.0 0.0   12.
 
 tagging.refine1.type = FieldRefinement
 tagging.refine1.field_name = iblank_cell
