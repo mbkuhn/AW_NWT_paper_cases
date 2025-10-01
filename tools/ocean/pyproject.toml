@@ -1,0 +1,11 @@
+[project]
+name = "ocean"
+version = "0.1.0"
+description = "PostProcessing script for Energy Spectra for Irregular Ocean Waves"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.6",
+    "numpy>=2.3.3",
+    "scipy>=1.16.2",
+]
