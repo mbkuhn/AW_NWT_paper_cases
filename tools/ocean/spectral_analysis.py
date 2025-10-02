@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.15.2"
+__generated_with = "0.16.4"
 app = marimo.App()
 
 
@@ -206,7 +206,7 @@ def _(Eta_CFD_three_levels, Eta_CFD_wholedom_fivelevs, X_256, np):
     _ny = _nx
 
     # works for all the cases with the domain of typical length
-    Nperseg_three_levels = 256
+    Nperseg_three_levels = 128
     SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
 
     kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0], Nperseg_three_levels, 256)
