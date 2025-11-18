@@ -28,7 +28,7 @@ linear_solvers:
 realms:
 
   - name: realm_1
-    mesh: jacket_mesh.exo
+    mesh: jacket_mesh_update.exo
     use_edges: yes
     automatic_decomposition_type: rcb
     check_for_missing_bcs: yes
