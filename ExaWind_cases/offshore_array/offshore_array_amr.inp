@@ -28,6 +28,7 @@ OceanWaves.W2A1.relax_zone_length_y=240
 OceanWaves.W2A1.number_interp_points_in_z = 50
 OceanWaves.W2A1.interp_spacing_at_surface = 1.
 OceanWaves.W2A1.number_interp_above_surface = 7
+OceanWaves.W2A1.initialize_wave_field = true
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #               PHYSICS                 #
@@ -35,8 +36,6 @@ OceanWaves.W2A1.number_interp_above_surface = 7
 incflo.use_godunov = 1
 incflo.godunov_type = weno_z
 incflo.mflux_type = minmod
-incflo.do_initial_proj = false
-incflo.initial_iterations = 0
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1.0e-3
 transport.viscosity_fluid2=1.8e-5
@@ -53,25 +52,22 @@ ICNS.reconstruct_true_pressure = true
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
-amr.n_cell              = 64 64 8
-amr.max_level = 3
+amr.n_cell              = 128 128 16
+amr.max_level = 2
+amr.blocking_factor_z = 4
 
-tagging.labels = refine0 refine1
+tagging.labels = refine0
 tagging.refine0.type = GeometryRefinement
 tagging.refine0.shapes = b1
 tagging.refine0.min_level  = 0
-tagging.refine0.max_level  = 2
+tagging.refine0.max_level  = 1
 tagging.refine0.b1.type = box                 
 tagging.refine0.b1.origin = 0 0 -6
 tagging.refine0.b1.xaxis = 1500. 0.0 0.0
 tagging.refine0.b1.yaxis = 0.0 1500. 0.0
 tagging.refine0.b1.zaxis = 0.0 0.0   12.
 
-tagging.refine1.type = FieldRefinement
-tagging.refine1.field_name = iblank_cell
-tagging.refine1.grad_error = 0.9
-tagging.refine1.min_level = 0
-tagging.refine1.max_level = 1
+# add refinement boxes for each jacket
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              GEOMETRY                 #
