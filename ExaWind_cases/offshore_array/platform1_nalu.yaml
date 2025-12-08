@@ -100,7 +100,7 @@ realms:
         mesh_group:
           - overset_name: oset_n
             mesh_parts: [bulk-PYRAMID,bulk-TETRA]
-            wall_parts: [bottom,wall]
+            wall_parts: [wall]
             ovset_parts: [overset]
 	   
     solution_options:
