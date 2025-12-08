@@ -28,7 +28,7 @@ linear_solvers:
 realms:
 
   - name: realm_1
-    mesh: jacket_mesh_update5_offset2_mxpy.exo
+    mesh: jacket_mesh_update5.exo
     use_edges: yes
     automatic_decomposition_type: rcb
     check_for_missing_bcs: yes
@@ -102,6 +102,13 @@ realms:
             mesh_parts: [bulk-PYRAMID,bulk-TETRA]
             wall_parts: [wall]
             ovset_parts: [overset]
+
+    mesh_motion:
+      - name: interior
+        mesh_parts: [bulk-PYRAMID,bulk-TETRA]
+        motion:
+         - type: translation
+           displacement: [-390., 390., -60.]
 
     solution_options:
       name: myOptions
