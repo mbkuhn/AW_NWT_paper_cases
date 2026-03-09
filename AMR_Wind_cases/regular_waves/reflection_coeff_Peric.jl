@@ -97,9 +97,9 @@ for ii = 0:time_points
         global rx_points = length(relax_zone_location)
     end
 end
-hline!(ones(length(x))*wave_height*0.5,linestyle=:dash,color=:black,label="Theoretical Amplitude")
-hline!(ones(length(x))*wave_height*0.5*-1,linestyle=:dash,color=:black,primary=false)
-vline!(ones(length(eta))*16,linestyle=:dash,color=:blue,label="Relaxation Zone")
+hline!(ones(size(x)[1])*wave_height*0.5,linestyle=:dash,color=:black,label="Theoretical Amplitude")
+hline!(ones(size(x)[1])*wave_height*0.5*-1,linestyle=:dash,color=:black,primary=false)
+vline!(ones(size(eta)[1])*16,linestyle=:dash,color=:blue,label="Relaxation Zone")
 xlabel!("\$x\$ [m]")
 ylabel!("\$\\eta(x)\$ [m]")
 savefig(eta_plot,"eta.pdf")
