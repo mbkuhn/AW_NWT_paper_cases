@@ -10,13 +10,14 @@ using Printf
 using Images
 using LinearAlgebra
 
-# linear H = 0.0256
-# II order H = 0.16
-# V order H = 0.3585
+# choose case (1, 2, 3)
+icase = 3
 
 # physical parameters for simulation
 wave_length  = 4. # meters
-wave_height  = 0.0256 # meters (this is through to crest)
+wave_min     = 0.0 # expected peak
+wave_max     = 0.0 # expected trough
+wave_height  = 0.0 # (specified later)
 wave_period  = 1.6 # seconds
 wave_number  = 2*pi/wave_length # meters^-1
 wave_frequency = 1/wave_period # Hertz. Note: this is the fundamental frequency: the peaks of the signal will be observed here
@@ -40,11 +41,31 @@ time_points = 0
 space_points = 0
 # parse data
 valid_ns = [n for n in 1400:(nt-1) if mod(n * out_int, 1) == 0]
+path_prefix = "/Users/mkuhn/testruns_data/MKuhn_regularwavesdata"
+
 for n in valid_ns # Last 4 seconds of the simulations to avoid transient times (flat waveprofiles)
     global time_points = time_points + 1
-    x_oo = readdlm("/PATH/TO/LINEARWAVES/post_processing/sampling_fs_domain" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
-    #x_oo = readdlm("/PATH/TO/SECONDORDERWAVES/post_processing/sampling_fs_domain" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
-    #x_oo = readdlm("/PATH/TO/FIFTHORDER/post_processing/sampling_fs_domain" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    full_prefix = path_prefix
+    if (icase == 1)
+        global wave_height = 0.0256
+        global wave_min = wave_height / 2.
+        global wave_max = -wave_height / 2.
+        full_prefix *= "/LinearWaves"
+    elseif (icase == 2)
+        global wave_height = 0.16
+        # expected peak and trough calculated through dispersion relation
+        global wave_min = -0.0749735
+        global wave_max = 0.0850265
+        full_prefix *= "/SecondOrder"
+    else
+        global icase = 5
+        global wave_height = 0.3585
+        # expected peak and trough calculated through dispersion relation
+        global wave_min = -0.151347
+        global wave_max = 0.207153
+        full_prefix *= "/FifthOrder"
+    end
+    x_oo = readdlm(full_prefix * "/post_processing/sampling_fs_domain" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo = x_oo[:,1:3]
     x_oo = Float64.(x_oo)
     x_oo = x_oo[sortperm(x_oo[:, 1]), :] # reordering array
@@ -80,7 +101,7 @@ x_Cr = reshape(x_Cr,(space_points_Cr,time_points))
 eta_Cr = reshape(eta_Cr,(space_points_Cr,time_points))
 
 # plot wave elevation at different times
-eta_plot = plot(x[:,1],eta[:,1],label="t = 14 sec",legend=:outertop)
+eta_plot = plot(x[:,1],eta[:,1],label="t = 14 sec",legend=:outerbottom,legend_column=3)
 forcing_zone = []
 eta_rx_zone = []
 rx_points = 0
@@ -97,12 +118,13 @@ for ii = 0:time_points
         global rx_points = length(relax_zone_location)
     end
 end
-hline!(ones(size(x)[1])*wave_height*0.5,linestyle=:dash,color=:black,label="Theoretical Amplitude")
-hline!(ones(size(x)[1])*wave_height*0.5*-1,linestyle=:dash,color=:black,primary=false)
-vline!(ones(size(eta)[1])*16,linestyle=:dash,color=:blue,label="Relaxation Zone")
+hline!(ones(size(x)[1])*wave_max,linestyle=:dash,color=:black,label="Theoretical Amplitude")
+hline!(ones(size(x)[1])*wave_min,linestyle=:dash,color=:black,primary=false)
+vline!(ones(size(eta)[1])*4,linestyle=:dashdot,color=:blue,label="Generation Zone")
+vline!(ones(size(eta)[1])*16,linestyle=:dashdot,color=:red,label="Relaxation Zone")
 xlabel!("\$x\$ [m]")
 ylabel!("\$\\eta(x)\$ [m]")
-savefig(eta_plot,"eta.pdf")
+savefig(eta_plot,"eta_order" * string(icase) * ".pdf")
 
 # get all peaks for all of the relevant times
 # wave height is the distance between a through (peak) and a crest
