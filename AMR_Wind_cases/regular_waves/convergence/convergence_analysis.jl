@@ -31,11 +31,14 @@ x2 = 0
 x3 = 0
 x4 = 0
 
+path_prefix = "/Users/mkuhn/testruns_data/VofConvergenceData/vof/post_processing"
+ow_path_prefix = "/Users/mkuhn/testruns_data/VofConvergenceData/ow_vof/post_processing"
+
 
 for n in 0:(nt-1)
 
     # ow_vof
-    x_oo_1 = readdlm("/Users/mpolimen/Local/Projects/reflection_coeff_julia/Peric_results/Peric_V_stokes/conv_analysis/ow_vof/post_processing/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_1 = readdlm(ow_path_prefix*"/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_1 = x_oo_1[1:3]
     x_oo_1 = Float64.(x_oo_1)
     global x1 = x_oo_1[1]
@@ -43,7 +46,7 @@ for n in 0:(nt-1)
     global z1_list[n+1] = z1
 
     # vof, two levels of refinement
-    x_oo_2 = readdlm("/Users/mpolimen/Local/Projects/reflection_coeff_julia/Peric_results/Peric_V_stokes/conv_analysis/vof/post_processing_2levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_2 = readdlm(path_prefix*"_2levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_2 = x_oo_2[1:3]
     x_oo_2 = Float64.(x_oo_2)
     global x2 = x_oo_2[1]
@@ -51,7 +54,7 @@ for n in 0:(nt-1)
     global z2_list[n+1] = z2
 
     # vof, one level of ref
-    x_oo_3 = readdlm("/Users/mpolimen/Local/Projects/reflection_coeff_julia/Peric_results/Peric_V_stokes/conv_analysis/vof/post_processing_1levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_3 = readdlm(path_prefix*"_1levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_3 = x_oo_3[1:3]
     x_oo_3 = Float64.(x_oo_3)
     global x3 = x_oo_3[1]
@@ -59,7 +62,7 @@ for n in 0:(nt-1)
     global z3_list[n+1] = z3
 
     # vof, zero level of ref
-    x_oo_4 = readdlm("/Users/mpolimen/Local/Projects/reflection_coeff_julia/Peric_results/Peric_V_stokes/conv_analysis/vof/post_processing_0levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_4 = readdlm(path_prefix*"_0levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_4 = x_oo_4[1:3]
     x_oo_4 = Float64.(x_oo_4)
     global x4 = x_oo_4[1]
@@ -82,10 +85,10 @@ diffs_two_levs = (z1_list[times_idx] .- z2_list[times_idx])
 diffs_one_levs = (z1_list[times_idx] .- z3_list[times_idx])
 diffs_zero_levs = (z1_list[times_idx] .- z4_list[times_idx])
 
-abs_err_two_levs = maximum(abs.(diffs_two_levs))
-abs_err_one_levs = maximum(abs.(diffs_one_levs))
-abs_err_zero_levs = maximum(abs.(diffs_zero_levs))
-error_vec = [abs_err_zero_levs, abs_err_one_levs, abs_err_two_levs]
+sum_err_two_levs = sum(abs.(diffs_two_levs))
+sum_err_one_levs = sum(abs.(diffs_one_levs))
+sum_err_zero_levs = sum(abs.(diffs_zero_levs))
+error_vec = [sum_err_zero_levs, sum_err_one_levs, sum_err_two_levs]
 
 dx_zero = 0.0625
 dx_one = 0.5*0.0625
@@ -95,14 +98,14 @@ dx_vec = [dx_zero, dx_one, dx_two]
 # Linear fit in log-log space
 log_dx = log10.(dx_vec)
 log_err = log10.(error_vec)
-p = fit(log_dx, log_err, 1)
+p = Polynomials.fit(log_dx, log_err, 1)
 slope = p.coeffs[1]  # convergence rate
 intercept = p.coeffs[2]
 println("Convergence Rate = ",slope)
 
 # Evaluate fitted line
 fit_line = intercept .+ 1.0 .* log_dx
-fit_errors = 10 .^ fit_line  # back-transform to linear space
+fit_errors = 40 * (10 .^ fit_line)  # back-transform to linear space
 
 wave_profiles = plot(t_physical,z1_list,linestyle=:dash,label="Target Vof",legend=:outertop)
 plot!(t_physical,z2_list,label="Computed Vof - Two Refinement Levels")
@@ -110,18 +113,18 @@ plot!(t_physical,z3_list,linestyle=:dashdot,label="Computed Vof - One Refinement
 plot!(t_physical,z4_list,linestyle=:dashdotdot,label="Computed Vof - No Refinement Level")
 xlabel!("\$t\$ [sec]")
 ylabel!("\$\\eta(x_\\mathrm{p}=10,t)\$ [m]")
-savefig(wave_profiles,"vof_vs_owvof.pdf")
+savefig(wave_profiles,"../plotting_outputs/vof_vs_owvof.pdf")
 
 error_plot = plot(t_physical[times_idx],diffs_two_levs,label="Two Refinement Levels",legend=:outertop)
 plot!(t_physical[times_idx],diffs_one_levs,label="One Refinement Levels")
 plot!(t_physical[times_idx],diffs_zero_levs,label="No Refinement Levels")
 xlabel!("\$t\$ [sec]")
 ylabel!("\$\\eta_{\\mathrm{target}}(x_\\mathrm{p}=10,t) - \\eta(x_\\mathrm{p}=10,t) \$ [m]")
-savefig(error_plot,"error.pdf")
+savefig(error_plot,"../plotting_outputs/error.pdf")
 
 norm_plot = plot(dx_vec, error_vec, marker = :circle, linestyle = :solid, label = "Error", xscale = :log10, yscale = :log10)
-plot!(dx_vec,fit_errors,linestyle = :dash,label="slope-1 Line")
+plot!(dx_vec,fit_errors,linestyle = :dash,label="1st order")
 xlabel!("\$\\Delta{x}\$ [m]")
-ylabel!("\$\\max|\\eta_{\\mathrm{target}}(t) - \\eta(t)|\$ [m]")
-title!("Maximum Error at \$x=10\$ for \$t\\in[10,18]sec\$")
-savefig(norm_plot,"norm_plot.pdf")
+ylabel!("\$\\Sigma|\\eta_{\\mathrm{target}}(t) - \\eta(t)|\$ [m]")
+# title!("Shape Error \$(L_1)\$ at \$x=10\$ for \$t\\in[10,18]sec\$")
+savefig(norm_plot,"../plotting_outputs/norm_plot.pdf")
