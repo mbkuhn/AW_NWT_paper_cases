@@ -107,10 +107,10 @@ println("Convergence Rate = ",slope)
 fit_line = intercept .+ 1.0 .* log_dx
 fit_errors = 40 * (10 .^ fit_line)  # back-transform to linear space
 
-wave_profiles = plot(t_physical,z1_list,lw=2,color=:black,label="Target",legend=:outerbottom,legend_column=2)
-plot!(t_physical,z2_list,lw=2,color=:red,linestyle=:dash,label="2 Refinement Levels")
-plot!(t_physical,z3_list,lw=2,color=:blue,linestyle=:dashdot,label="1 Refinement Level")
-plot!(t_physical,z4_list,lw=2,color=:green,linestyle=:dashdotdot,label="0 Refinement Levels")
+wave_profiles = plot(t_physical,z1_list,color=:black,label="Target",legend=:outerbottom,legend_column=2)
+plot!(t_physical,z2_list,color=:red,linestyle=:dash,label="2 Refinement Levels")
+plot!(t_physical,z3_list,color=:blue,linestyle=:dashdot,label="1 Refinement Level")
+plot!(t_physical,z4_list,color=:green,linestyle=:dashdotdot,label="0 Refinement Levels")
 xlabel!("\$t\$ [sec]")
 ylabel!("\$\\eta(x_\\mathrm{p}=10,t)\$ [m]")
 savefig(wave_profiles,"../plotting_outputs/vof_vs_owvof.pdf")

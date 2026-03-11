@@ -3,7 +3,7 @@
 1 0 obj
 <<
 /Creator (GKS)
-/CreationDate (D:20260311154523)
+/CreationDate (D:20260311155144)
 /Producer (GKS 5 PDF driver)
 >>
 endobj
@@ -56,7 +56,7 @@ endobj
 endobj
 6 0 obj
 <<
-/Length 170760
+/Length 170752
 >>
 stream
 /GS255 gs
@@ -1641,7 +1641,7 @@ W n
 h f
 Q
 [] 0 d
-1 J 1 j 2 w
+1 J 1 j 1 w
 /GS255 gs
 0 0 0 RG
 q
@@ -3454,8 +3454,8 @@ W n
 573.35 250.42 l
 S
 Q
-[16 10] 0 d
-1 J 1 j 2 w
+[8 5] 0 d
+1 J 1 j 1 w
 /GS255 gs
 1 0 0 RG
 q
@@ -5268,8 +5268,8 @@ W n
 573.35 250.59 l
 S
 Q
-[16 8 2 8] 0 d
-1 J 1 j 2 w
+[8 4 1 4] 0 d
+1 J 1 j 1 w
 /GS255 gs
 0 0 1 RG
 q
@@ -7082,8 +7082,8 @@ W n
 573.35 244.45 l
 S
 Q
-[16 8 2 8 2 8] 0 d
-1 J 1 j 2 w
+[8 4 1 4 1 4] 0 d
+1 J 1 j 1 w
 /GS255 gs
 0 0.502 0 RG
 q
@@ -8930,7 +8930,7 @@ W n
 S
 Q
 [] 0 d
-1 J 1 j 2 w
+1 J 1 j 1 w
 /GS255 gs
 0 0 0 RG
 q
@@ -9154,8 +9154,8 @@ W n
 237.97 74.13 l
 h f
 Q
-[16 10] 0 d
-1 J 1 j 2 w
+[8 5] 0 d
+1 J 1 j 1 w
 /GS255 gs
 1 0 0 RG
 q
@@ -9723,8 +9723,8 @@ W n
 488.33 72.27 488.77 72.10 v
 h f
 Q
-[16 8 2 8] 0 d
-1 J 1 j 2 w
+[8 4 1 4] 0 d
+1 J 1 j 1 w
 /GS255 gs
 0 0 1 RG
 q
@@ -10239,8 +10239,8 @@ W n
 314.89 61.85 l
 h f
 Q
-[16 8 2 8 2 8] 0 d
-1 J 1 j 2 w
+[8 4 1 4 1 4] 0 d
+1 J 1 j 1 w
 /GS255 gs
 0 0.502 0 RG
 q
@@ -10823,5 +10823,5 @@ trailer
 /Info 1 0 R
 >>
 startxref
-171407
+171399
 %%EOF
