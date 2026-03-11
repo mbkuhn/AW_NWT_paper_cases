@@ -41,7 +41,7 @@ time_points = 0
 space_points = 0
 # parse data
 valid_ns = [n for n in 1400:(nt-1) if mod(n * out_int, 1) == 0]
-path_prefix = "/Users/mkuhn/testruns_data/MKuhn_regularwavesdata"
+path_prefix = "../data/reflection"
 
 for n in valid_ns # Last 4 seconds of the simulations to avoid transient times (flat waveprofiles)
     global time_points = time_points + 1
@@ -124,7 +124,7 @@ vline!(ones(size(eta)[1])*4,linestyle=:dashdot,color=:blue,label="Generation Zon
 vline!(ones(size(eta)[1])*16,linestyle=:dashdot,color=:red,label="Relaxation Zone")
 xlabel!("\$x\$ [m]")
 ylabel!("\$\\eta(x)\$ [m]")
-savefig(eta_plot,"eta_order" * string(icase) * ".pdf")
+savefig(eta_plot,"../plotting_outputs/eta_order" * string(icase) * ".pdf")
 
 # get all peaks for all of the relevant times
 # wave height is the distance between a through (peak) and a crest
