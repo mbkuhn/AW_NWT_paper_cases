@@ -19,11 +19,9 @@ linear_solvers:
     type: hypre
     method: hypre_gmres
     preconditioner: boomerAMG
-    tolerance: 1e-5
+    tolerance: 1e-8
     max_iterations: 200
     kspace: 75
-    bamg_relax_type: 18
-    bamg_max_levels: 1
 
 realms:
 
@@ -32,6 +30,10 @@ realms:
     use_edges: yes
     automatic_decomposition_type: rcb
     check_for_missing_bcs: yes
+
+    time_step_control:
+      target_courant: 10.0
+      time_step_change_factor: 1.2
 
     equation_systems:
       name: theEqSys
@@ -61,8 +63,8 @@ realms:
           volume_of_fluid: sloshing_tank
           pressure: sloshing_tank
         user_function_parameters:
-          volume_of_fluid: [0.0, 0.0, 0.25, 3.5]
-          pressure: [0.0, 0.0, 0.25, 3.5, 33.75]
+          volume_of_fluid: [0.0, 0.0, 0.25, 2.0]
+          pressure: [0.0, 0.0, 0.25, 2.0, 33.75]
 
       - constant: ic_1
         target_name: [bulk-PYRAMID,bulk-TETRA]
@@ -168,8 +170,8 @@ Time_Integrators:
       name: ti_1
       start_time: 0.0
       termination_time: 200.0
-      time_step: 0.1
-      time_stepping_type: fixed
+      time_step: 0.03
+      time_stepping_type: adaptive
       time_step_count: 0
       second_order_accuracy: yes
 

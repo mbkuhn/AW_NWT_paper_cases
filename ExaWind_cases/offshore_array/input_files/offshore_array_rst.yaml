@@ -1,12 +1,12 @@
 
 exawind:
   nalu_wind_inp:
-    - platform1_nalu.yaml
-    - platform2_nalu.yaml
-    - platform3_nalu.yaml
-    - platform4_nalu.yaml
-  amr_wind_inp: offshore_array_amr.inp
-  max_time: 100
+    - platform1_nalu_rst.yaml
+    - platform2_nalu_rst.yaml
+    - platform3_nalu_rst.yaml
+    - platform4_nalu_rst.yaml
+  amr_wind_inp: offshore_array_amr_rst.inp
+  max_time: 3675
   additional_picard_iterations: 2
 
   nalu_vars:

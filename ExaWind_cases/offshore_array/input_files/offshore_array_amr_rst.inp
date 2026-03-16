@@ -1,0 +1,137 @@
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            SIMULATION STOP            #
+#.......................................#
+time.stop_time               =   60     # Max (simulated) time to evolve
+time.max_step                =   -1
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#         TIME STEP COMPUTATION         #
+#.......................................#
+time.fixed_dt         =   -1        # Use this constant dt if > 0
+#time.fixed_dt       =   0.01
+time.init_shrink     =    1.0
+time.initial_dt       =   0.0002
+time.max_dt           =   0.03
+time.min_dt           =   1e-7
+time.cfl              =   0.95         # CFL factor
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#            INPUT AND OUTPUT           #
+#.......................................#
+io.restart_file               =  ../chk46000
+time.plot_interval            =  50       # Steps between plot files
+time.checkpoint_interval      =  1000       # Steps between checkpoint files
+io.outputs = density velocity p vof ow_levelset ow_velocity w2a_levelset w2a_velocity levelset reference_pressure
+
+OceanWaves.label = W2A1
+OceanWaves.W2A1.type = W2AWaves
+OceanWaves.W2A1.HOS_modes_filename = /scratch/mkuhn/HOS_Ocean_precursor_halflength_current/Results/modes_HOS_SWENSE.dat
+OceanWaves.W2A1.relax_zone_gen_length=240
+OceanWaves.W2A1.numerical_beach_length=240
+OceanWaves.W2A1.numerical_beach_length_factor=1.5
+OceanWaves.W2A1.relax_zone_length_y=240
+# These variables should change with resolution in z
+OceanWaves.W2A1.number_interp_points_in_z = 50
+OceanWaves.W2A1.interp_spacing_at_surface = 1.
+OceanWaves.W2A1.number_interp_above_surface = 7
+OceanWaves.W2A1.initialize_wave_field = false
+
+OceanWaves.W2A1.HOS_domain_offset_x = -750
+OceanWaves.W2A1.HOS_domain_offset_y = -750
+
+#OceanWaves.W2A1.type = LinearWaves
+#OceanWaves.W2A1.wave_length = 10.
+#OceanWaves.W2A1.wave_height = 0.
+#OceanWaves.W2A1.water_depth = 60.
+
+Overset.reinit_iterations = 0
+incflo.verbose = 5
+
+incflo.initial_iterations = 3
+incflo.do_initial_proj = 0
+
+nodal_proj.max_coarsening_level = 0
+nodal_proj.bottom_atol = -1
+nodal_proj.bottom_solver = hypre
+mac_proj.max_coarsening_level = 1
+mac_proj.bottom_atol = -1
+mac_proj.bottom_solver = hypre
+incflo.diffusion_type = 0
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#               PHYSICS                 #
+#.......................................#
+incflo.use_godunov = 1
+incflo.godunov_type = weno_z
+#incflo.mflux_type = minmod
+transport.model = TwoPhaseTransport
+transport.viscosity_fluid1=1.0e-3
+transport.viscosity_fluid2=1.8e-5
+turbulence.model = Laminar 
+
+incflo.physics = MultiPhase OceanWaves
+MultiPhase.density_fluid1=1025
+MultiPhase.density_fluid2=1.225
+MultiPhase.verbose=0
+MultiPhase.initialize_pressure = true
+ICNS.source_terms = GravityForcing 
+ICNS.use_perturb_pressure = true
+ICNS.reconstruct_true_pressure = true
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#        ADAPTIVE MESH REFINEMENT       #
+#.......................................#
+amr.n_cell              = 128 128 16
+amr.max_level = 2
+amr.blocking_factor_z = 4
+
+tagging.labels = refine0 refine1
+tagging.refine0.type = GeometryRefinement
+tagging.refine0.shapes = b1
+tagging.refine0.min_level  = 0
+tagging.refine0.max_level  = 1
+tagging.refine0.b1.type = box                 
+tagging.refine0.b1.origin = -750. -750. -6
+tagging.refine0.b1.xaxis = 1500. 0.0 0.0
+tagging.refine0.b1.yaxis = 0.0 1500. 0.0
+tagging.refine0.b1.zaxis = 0.0 0.0   12.
+
+tagging.refine1.type = GeometryRefinement
+tagging.refine1.shapes = c1 c2 c3 c4
+tagging.refine1.min_level  = 0
+tagging.refine1.max_level  = 1
+tagging.refine1.c1.type = cylinder
+tagging.refine1.c1.start = -390.0 -390.0 -60.0
+tagging.refine1.c1.end = -390.0 -390.0 22.0
+tagging.refine1.c1.outer_radius = 21.
+tagging.refine1.c2.type = cylinder
+tagging.refine1.c2.start = -390.0 390.0 -60.0
+tagging.refine1.c2.end = -390.0 390.0 22.0
+tagging.refine1.c2.outer_radius = 21.
+tagging.refine1.c3.type = cylinder
+tagging.refine1.c3.start = 390.0 -390.0 -60.0
+tagging.refine1.c3.end = 390.0 -390.0 22.0
+tagging.refine1.c3.outer_radius = 21.
+tagging.refine1.c4.type = cylinder
+tagging.refine1.c4.start = 390.0 390.0 -60.0
+tagging.refine1.c4.end = 390.0 390.0 22.0
+tagging.refine1.c4.outer_radius = 21.
+
+
+# add refinement boxes for each jacket
+
+#¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
+#              GEOMETRY                 #
+#.......................................#
+geometry.prob_lo        =     -750.0 -750.0 -60   # Lo corner coordinates
+geometry.prob_hi        =     750 750  33.75  # Hi corner coordinates
+geometry.is_periodic    =     0    0     0   # Periodicity x y z (0/1)
+
+xlo.type = wave_generation
+xlo.density = 1.225
+xhi.type = pressure_outflow
+ylo.type = wave_generation
+ylo.density = 1.225
+yhi.type = wave_generation
+yhi.density = 1.225
+zlo.type = slip_wall
+zhi.type = pressure_outflow
