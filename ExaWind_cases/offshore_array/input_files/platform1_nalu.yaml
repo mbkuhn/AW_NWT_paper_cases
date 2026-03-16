@@ -115,6 +115,7 @@ realms:
     solution_options:
       name: myOptions
       use_balanced_buoyancy_force: yes
+      vof_sharpening_scaling_factor: 1
 
       options:
         - hybrid_factor:
