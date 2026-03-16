@@ -26,7 +26,7 @@ linear_solvers:
 realms:
 
   - name: realm_1
-    mesh: ../test_less_sharpening/rst/jacketPlatform4.rst
+    mesh: rst/jacketPlatform4.rst
     use_edges: yes
     check_for_missing_bcs: yes
 
