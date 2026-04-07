@@ -151,7 +151,7 @@ for ii in axes(eta_Cr,2)
 end
 
 # print maximum and minimum heights found and the computed reflection coefficient
-indices = findall(H_list->(H_list>(0.2*wave_height) && H_list<(1.2*wave_height)),H_list) # to get rid of outliers that would skew the computation
+indices = findall(H_list->(H_list>(0.8*wave_height) && H_list<(1.2*wave_height)),H_list) # to get rid of outliers that would skew the computation
 H_list = H_list[indices]
 H_max = maximum(H_list)
 println("H_max = ",H_max)
