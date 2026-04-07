@@ -99,13 +99,16 @@ dx_vec = [dx_zero, dx_one, dx_two]
 log_dx = log10.(dx_vec)
 log_err = log10.(error_vec)
 p = Polynomials.fit(log_dx, log_err, 1)
-slope = p.coeffs[1]  # convergence rate
-intercept = p.coeffs[2]
+slope = p.coeffs[2]  # convergence rate
+intercept = p.coeffs[1]
 println("Convergence Rate = ",slope)
 
 # Evaluate fitted line
-fit_line = intercept .+ 1.0 .* log_dx
-fit_errors = 40 * (10 .^ fit_line)  # back-transform to linear space
+fit_line = 1.0 .* log_dx .+ (log_err[1] - log_dx[1]) .- 0.1
+fit_line2 = 2.0 .* log_dx .+ (log_err[1] - 2. * log_dx[1])
+fit_errors = (10 .^ fit_line)  # back-transform to linear space
+fit_errors2 = (10 .^ fit_line2)
+
 
 wave_profiles = plot(t_physical,z1_list,color=:black,label="Target",legend=:outerbottom,legend_column=2)
 plot!(t_physical,z2_list,color=:red,linestyle=:dash,label="2 Refinement Levels")
@@ -124,6 +127,7 @@ savefig(error_plot,"../plotting_outputs/error.pdf")
 
 norm_plot = plot(dx_vec, error_vec, marker = :circle, lw=2, color=:red, linestyle = :solid, label = "Error", xscale = :log10, yscale = :log10)
 plot!(dx_vec,fit_errors,lw=2, linestyle = :dash,color=:black,label="1st order")
+#plot!(dx_vec,fit_errors2,lw=2, linestyle = :dot,color=:black,label="2nd order")
 xlabel!("\$\\Delta{x}\$ [m]")
 ylabel!("\$\\Sigma|\\eta_{\\mathrm{target}}(t) - \\eta(t)|\$ [m]")
 # title!("Shape Error \$(L_1)\$ at \$x=10\$ for \$t\\in[10,18]sec\$")
