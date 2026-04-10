@@ -2,8 +2,8 @@
 Restart previous computation                     :: i_restart     :: 0
 Choice of computed case (definition of wave)     :: i_case        :: 3
 --- Geometry of the horizontal domain
-Length in x-direction                            :: xlen          :: 40.0
-Length in y-direction                            :: ylen          :: 40.0
+Length in x-direction                            :: xlen          :: 20.0
+Length in y-direction                            :: ylen          :: 20.0
 --- Relaxation zones
 Use of absorption/generation                     :: i_rlx         :: 0
 Type of zones                                    :: i_abs         :: 1
@@ -18,7 +18,7 @@ Dommermuth initialisation                        :: n             :: 4
 Dommermuth initialisation                        :: Ta            :: 10.
 --- Physical dimensional parameters
 Gravity (in m.s-2)                               :: grav          :: 9.81
-Mean water depth (real number in m)              :: depth         :: 1000.
+Mean water depth (real number in m)              :: depth         :: 60.
 --- Current parameters
 Current type (0 ; 1 or 2)                        :: i_curr        :: 0
 Constant current velocity (m/s)                  :: u_0           :: 1.0
