@@ -127,17 +127,13 @@ def _(np):
     time_wanted = 1600.0 # change this to update time to compare for spectrum
     time_to_check = np.argmin(np.abs(times-time_wanted))
     my_time = times[time_to_check]
-    print(my_time)
     return
 
 
 @app.cell
 def _(get_data):
     _zone_data = get_data(1599.85)
-    if _zone_data is not None:
-        print(_zone_data.shape)
-        print(_zone_data[:5])
-    else:
+    if _zone_data is None:
         print('Time not found.')
     return
 
@@ -161,7 +157,7 @@ def _(get_data, plt):
         plt.ylabel('ky')
         plt.title(f'E0 at t = {zone_time:.5f}')
         plt.tight_layout()
-        plt.savefig('instantaneous_2D_spectra.png', bbox_inches='tight', dpi=300)
+        plt.savefig('plotting_outputs/instantaneous_2D_spectra.png', bbox_inches='tight', dpi=300)
     return a_eta, kx
 
 
@@ -250,7 +246,7 @@ def _(
     plt.xlabel('$k_x$', fontsize=14)
     plt.ylabel('E', fontsize=14)
     plt.legend()
-    plt.savefig('one_dimensional_spectra_x.png', bbox_inches='tight', dpi=300)
+    plt.savefig('plotting_outputs/one_dimensional_spectra_x.png', bbox_inches='tight', dpi=300)
     return
 
 
@@ -322,9 +318,7 @@ def _(
     plt.legend()
     plt.title('Mechanical Energy Evolution')
     plt.ylim([0.5, 1.2])
-    plt.savefig('Energy.png', format='png', bbox_inches='tight', dpi=300)
-
-    print(CFDE_mech256_wholedom_fivelev[0], CFDE_mech256_wholedom_fivelev[1])
+    plt.savefig('plotting_outputs/Energy.png', format='png', bbox_inches='tight', dpi=300)
     return
 
 
