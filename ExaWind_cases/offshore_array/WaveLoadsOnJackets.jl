@@ -26,9 +26,8 @@ else
     smoothing_parameter = 30
 end
 
-file_exawind_pfx = "/Users/mkuhn/testruns_data/offshore_array/results/run"
-file_exawind_sfx1 = "/jacket"
-file_exawind_sfx2 = "_forces.dat"
+file_exawind_pfx = "/Users/mkuhn/testruns_data/offshore_array/results/jacket"
+file_exawind_sfx = "_forces.dat"
 file_exawind_labels = ["0","1","2"]
 jacket_labels = ["1","2","3","4"]
 
@@ -43,32 +42,17 @@ NaluWave_Mz = [Float64[],Float64[],Float64[],Float64[]]
 ji = 0
 for jn in jacket_labels
     global ji += 1
-    file_exawind = file_exawind_pfx * file_exawind_labels[1] * file_exawind_sfx1 * jn * file_exawind_sfx2
+    file_exawind = file_exawind_pfx * jn * file_exawind_sfx
     Nalu_data = readdlm(file_exawind,skipstart=2)
-    for label in file_exawind_labels[2:end]
-        file_exawind_tmp = file_exawind_pfx * label * file_exawind_sfx1 * jn * file_exawind_sfx2
-        Nalu_data_tmp = readdlm(file_exawind_tmp,skipstart=1)
-        first_time = Nalu_data_tmp[1,1]
-        last_index = length(Nalu_data[:,1])
-        for ii=1:length(Nalu_data[:,1])
-            last_time = Nalu_data[last_index,1]
-            if (last_time >= first_time)
-                last_index -= 1
-            else
-                break
-            end
-        end
-        Nalu_data = vcat(Nalu_data[1:last_index,:],Nalu_data_tmp)
-    end
 
     NaluWAVE_data = Float64.(Nalu_data[2:end,:])
     # Make unevenly space time series into an evenly spaced one
-    dt_array = zeros(length(NaluWAVE_data[:,1]))
+    local dt_array = zeros(length(NaluWAVE_data[:,1]))
     for ii=1:length(dt_array)-1
-        dt = NaluWAVE_data[ii+1,1].-NaluWAVE_data[ii,1]
-        dt_array[ii] = dt
+        local dt = NaluWAVE_data[ii+1,1].-NaluWAVE_data[ii,1]
+        global dt_array[ii] = dt
     end
-    t_spacing = median(dt_array)
+    local t_spacing = median(dt_array)
     # Create evenly-spaced time array
     time_evenly_spaced = collect(NaluWAVE_data[1,1]:t_spacing:NaluWAVE_data[end,1])
 
@@ -94,7 +78,7 @@ for jn in jacket_labels
     # In case one needs to discard any transient time data
     t_skip = 240.
     t_final = t_skip + 1e10
-    indices = findall(NaluWave_time->(NaluWave_time>=(t_skip) && NaluWave_time<=(t_final)),NaluWave_time)
+    local indices = findall(NaluWave_time->(NaluWave_time>=(t_skip) && NaluWave_time<=(t_final)),NaluWave_time)
 
     global NaluWave_time = NaluWave_time[indices]
     NaluWave_Fx[ji] = (Nalu_EvenlySpaced_Fx[indices])
@@ -110,7 +94,7 @@ stepRangeNalu = collect(1:length(NaluWave_time)) # include all of the Nalu time
 ### **** PSD COMPUTATIONS AND PLOTS ******
 # Fx
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[1][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
-F_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.3),ylims=(1e8,1e15),label="Jacket 1 - x",linestyle=:solid,color=:blue,legend=:topright)
+F_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.3),ylims=(1e7,1e14),label="Jacket 1 - x",linestyle=:solid,color=:blue,legend=:topright)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[2][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Jacket 2 - x",linestyle=:solid,color=:red)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[3][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
