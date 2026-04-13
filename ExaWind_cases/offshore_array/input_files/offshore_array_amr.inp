@@ -8,7 +8,6 @@ time.max_step                =   -1
 #         TIME STEP COMPUTATION         #
 #.......................................#
 time.fixed_dt         =   -1        # Use this constant dt if > 0
-#time.fixed_dt       =   0.01
 time.init_shrink     =    1.0
 time.initial_dt       =   0.0002
 time.max_dt           =   0.03
@@ -37,14 +36,6 @@ OceanWaves.W2A1.initialize_wave_field = false
 OceanWaves.W2A1.HOS_domain_offset_x = -750
 OceanWaves.W2A1.HOS_domain_offset_y = -750
 
-#OceanWaves.W2A1.type = LinearWaves
-#OceanWaves.W2A1.wave_length = 10.
-#OceanWaves.W2A1.wave_height = 0.
-#OceanWaves.W2A1.water_depth = 60.
-
-Overset.reinit_iterations = 0
-incflo.verbose = 5
-
 incflo.initial_iterations = 3
 incflo.do_initial_proj = 0
 
@@ -61,7 +52,6 @@ incflo.diffusion_type = 0
 #.......................................#
 incflo.use_godunov = 1
 incflo.godunov_type = weno_z
-#incflo.mflux_type = minmod
 transport.model = TwoPhaseTransport
 transport.viscosity_fluid1=1.0e-3
 transport.viscosity_fluid2=1.8e-5
