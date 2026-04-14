@@ -67,28 +67,22 @@ zhi.type = "no_slip_wall"
 #        ADAPTIVE MESH REFINEMENT       #
 #.......................................#
 amr.n_cell    = 320 16 320
-amr.max_level = 2
+amr.max_level = 0
 amr.blocking_factor_y = 2
-
-tagging.labels                                  = static
-tagging.static.type                             = CartBoxRefinement
-tagging.static.static_refinement_def            = static_box.txt
 
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              POST-PROCESSING          #
 #.......................................#
-incflo.post_processing = sampling_fs_domain
+incflo.post_processing = sampling_fs_gauge
 
-# MORE POINTS: to plot eta vs x I will sample along the xy domain every 10 timesteps (2000 points along x)
-sampling_fs_domain.output_frequency             = 10
-sampling_fs_domain.output_format                = ascii
-sampling_fs_domain.labels                       = fs_domain
-sampling_fs_domain.fields                       = vof velocity
-sampling_fs_domain.fs_domain.type               = FreeSurfaceSampler
+sampling_fs_gauge.output_frequency            = 10
+sampling_fs_gauge.output_format               = ascii
+sampling_fs_gauge.labels                      = fs_gauge
+sampling_fs_gauge.fields                      = vof velocity
+sampling_fs_gauge.fs_gauge.type               = FreeSurfaceSampler
 
-sampling_fs_domain.fs_domain.plane_num_points   = 2001 1
-sampling_fs_domain.fs_domain.plane_start        = 0.0 0.0 0.0
-sampling_fs_domain.fs_domain.plane_end          = 20.0 0.0 0.0
-sampling_fs_domain.fs_domain.linear_interp_extent_from_xhi = 4.0
+sampling_fs_gauge.fs_gauge.plane_num_points   = 1 1
+sampling_fs_gauge.fs_gauge.plane_start        = 10.0 0.0 0.0
+sampling_fs_gauge.fs_gauge.plane_end          = 10.0 0.0 0.0
 
 incflo.verbose                                  = 0

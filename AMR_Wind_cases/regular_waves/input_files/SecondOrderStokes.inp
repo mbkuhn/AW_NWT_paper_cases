@@ -37,7 +37,6 @@ OceanWaves.Wave1.type                           = StokesWaves
 OceanWaves.Wave1.order                          = 2 # ratio between height and wavelength is < 0.0472 but > 0.0064 so the wave should be second order (Le Mehaute Graph)
 OceanWaves.Wave1.wave_height                    = 0.16
 OceanWaves.Wave1.wave_length                    = 4.0  # Wavelength calculated to be roughly 4m
-#OceanWaves.Wave1.wave_period                    = 1.6  
 OceanWaves.Wave1.water_depth                    = 18.0 # Water depth is 4.5 wavelengths
 OceanWaves.Wave1.relax_zone_gen_length          = 4.0  # Generation zone is 1 wavelength
 OceanWaves.Wave1.numerical_beach_length         = 4.0 # adjust this to have a different case to compare to
@@ -53,10 +52,7 @@ MultiPhase.verbose                              = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              PROJECTIONS              #
 #.......................................#
-#nodal_proj.max_coarsening_level = 2
-#nodal_proj.bottom_solver = hypre
 nodal_proj.bottom_atol = 1e-14
-#mac_proj.bottom_solver = hypre
 mac_proj.bottom_atol = 1e-14
 
 

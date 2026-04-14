@@ -36,7 +36,6 @@ OceanWaves.label                                = Wave1
 OceanWaves.Wave1.type                           = LinearWaves
 OceanWaves.Wave1.wave_height                    = 0.0256
 OceanWaves.Wave1.wave_length                    = 4.0  # Wavelength calculated to be roughly 4m
-#OceanWaves.Wave1.wave_period                    = 1.6  
 OceanWaves.Wave1.water_depth                    = 18.0 # Water depth is 4.5 wavelengths
 OceanWaves.Wave1.relax_zone_gen_length          = 4.0  # Generation zone is 1 wavelength
 OceanWaves.Wave1.numerical_beach_length         = 4.0 # adjust this to have a different case to compare to
@@ -78,7 +77,6 @@ zhi.type = "no_slip_wall"
 #.......................................#
 amr.n_cell    = 320 16 320
 amr.max_level = 2
-#amr.blocking_factor_y = 2
 
 tagging.labels                                  = static
 tagging.static.type                             = CartBoxRefinement
