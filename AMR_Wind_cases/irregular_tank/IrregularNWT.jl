@@ -21,8 +21,8 @@ else
     smoothing_parameter = 30
 end
 
-file_amrwind = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/amr-wind-standalone/same_res/output_same_res.txt"
-file_hosnwt = "/Users/mkuhn/testruns_data/OC5_semisubmersible/HOS-NWT/amr-wind-standalone/HOS_NWT_case4_probes.dat"
+file_amrwind = "/Users/mkuhn/testruns_data/HOS-NWT/paper_data/amr_wind_hos_nwt_sampling_time_series.txt"
+file_hosnwt = "/Users/mkuhn/testruns_data/HOS-NWT/paper_data/HOS_NWT_probes.dat"
 
 rows_to_skip = 49
 # Data from probes for JONSWAP spectrum from HOS-NWT simulation
@@ -40,9 +40,10 @@ end
 
 # AMR-Wind
 amrwind_data = readdlm(file_amrwind)
+amrwind_data = amrwind_data[2:end,1:4]
 amrwind_data = Float64.(amrwind_data)
 amrwind_time = amrwind_data[:,1]
-amrwind_wave = amrwind_data[:,2]
+amrwind_wave = amrwind_data[:,4]
 
 # Plot Waves Time series (Model Scale)
 Time_series_plot = plot(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT", color=:black)
