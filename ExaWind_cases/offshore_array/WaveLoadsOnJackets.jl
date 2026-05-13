@@ -26,7 +26,7 @@ else
     smoothing_parameter = 30
 end
 
-file_exawind_pfx = "/Users/mkuhn/testruns_data/offshore_array/results/jacket"
+file_exawind_pfx = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/offshore_array/results/jacket"
 file_exawind_sfx = "_forces.dat"
 file_exawind_labels = ["0","1","2"]
 jacket_labels = ["1","2","3","4"]
