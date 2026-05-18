@@ -215,7 +215,7 @@ def _(Eta_CFD_three_levels_half, Eta_CFD_three_levels, Eta_CFD_four_levels, Eta_
     _ny = _nx
 
     # works for all the cases with the domain of typical length
-    Nperseg_three_levels = 128
+    Nperseg_three_levels = 256
     SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
 
     kxCFD_three_levels_half, PhixCFDTotal_three_levels_half = PSD(SamplingFreq, Eta_CFD_three_levels_half[:, 0], Nperseg_three_levels, 256)
@@ -245,12 +245,13 @@ def _(Eta_CFD_three_levels_half, Eta_CFD_three_levels, Eta_CFD_four_levels, Eta_
         PhixCFDTotal_five_levels = PhixCFDTotal_five_levels + PhixCFD_five_levels
 
 
-    PhixCFDTotal_256_three_levels = PhixCFDTotal_three_levels_half / (2 * _ny)
-    PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (2 * _ny)
-    PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (2 * _ny)
-    PhixCFDTotal_five_levels_check = PhixCFDTotal_five_levels_check / (2 * _ny)
-    PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (2 * _ny)
-    PhixCFDTotal_wholedom_fivelevs = PhixCFDTotal_wholedom_fivelevs / (2 * _ny)
+    PhixCFDTotal_256_three_levels = PhixCFDTotal_three_levels_half / (_ny)
+    PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
+    PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (_ny)
+    PhixCFDTotal_five_levels_check = PhixCFDTotal_five_levels_check / (_ny)
+    PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (_ny)
+    PhixCFDTotal_wholedom_fivelevs = PhixCFDTotal_wholedom_fivelevs / (_ny)
+
     return (
         PhixCFDTotal_256_three_levels,
         PhixCFDTotal_three_levels,
