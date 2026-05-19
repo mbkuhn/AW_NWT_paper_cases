@@ -21,8 +21,8 @@ else
     smoothing_parameter = 30
 end
 
-file_amrwind = "/Users/mkuhn/testruns_data/HOS-NWT/paper_data/amr_wind_hos_nwt_sampling_time_series.txt"
-file_hosnwt = "/Users/mkuhn/testruns_data/HOS-NWT/paper_data/HOS_NWT_probes.dat"
+file_amrwind = "data/amr_wind_hos_nwt_sampling_time_series.txt"
+file_hosnwt = "data/HOS_NWT_probes.dat"
 
 rows_to_skip = 49
 # Data from probes for JONSWAP spectrum from HOS-NWT simulation
@@ -47,7 +47,7 @@ amrwind_wave = amrwind_data[:,4]
 
 # Plot Waves Time series (Model Scale)
 Time_series_plot = plot(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT", color=:black)
-plot!(amrwind_time,amrwind_wave,label="AMR-Wind", color=:red, linestyle=:dot)
+plot!(amrwind_time,amrwind_wave,label="Kynema-SGF", color=:red, linestyle=:dot)
 xlabel!("Time [sec]")
 ylabel!("Wave Elevation [m]")
 savefig(Time_series_plot,"plotting_outputs/wave_elevation_time_series.pdf")
@@ -55,7 +55,7 @@ savefig(Time_series_plot,"plotting_outputs/wave_elevation_time_series.pdf")
 ### **** PSD COMPUTATIONS AND PLOTS ******
 
 f, P1, PSD, fdouble, P2 = FFTAnalysis(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,true,false,smoothing_type,smoothing_parameter)
-wave_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,ylims=(1e-7,1e-2),xlims=(0,1.5),label="HOS-NWT",color=:black)
+wave_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,ylims=(1e-7,1e-2),xlims=(0,1.5),label="HOS-NWT",color=:black,linewidth=2)
 
 dt_array = zeros(length(amrwind_data[:,1]))
 for ii=1:length(dt_array)-1
@@ -72,7 +72,7 @@ AMRWind_time = amr_time_evenly_spaced
 AMRWind_Wave = amrwind_wave_evenly_spaced
 
 f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,true,false,smoothing_type,smoothing_parameter)
-plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="AMR-Wind Standalone",color=:red,linestyle=:dash)
+plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Kynema-SGF",color=:red,linestyle=:dot,linewidth=2)
 xlabel!("Frequency [Hz]")
 ylabel!("PSD of Incident Wave [m\$^2\$/Hz]")
 savefig(wave_plot,"plotting_outputs/wave_PSD.pdf")
