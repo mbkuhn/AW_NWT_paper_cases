@@ -109,36 +109,56 @@ def _(np, path):
                 data_by_time[current_time] = full_data
 
         return data_by_time
+    
+    def parse_single_file(itime):
+        filepath = path + "/HOS/a_3d_time" + str(itime) + ".txt"
+        first_filepath = path + "/HOS/a_3d_time0.txt"
+        kx_ky_ref = None
+        a_eta_list = []
 
-    # Usage:
-    data = parse_file(path + "../IrregularWavesDataOcean_discard/HOS/a_3d.dat") # full domain modes
+        kx_list, ky_list = [], []
 
-    def get_data(time_value):
-        return data.get(time_value, None)
-    return (get_data,)
+        do_first_zone = filepath == first_filepath
 
+        with open(first_filepath, 'r') as f:
+            iline = 0
+            for line in f:
+                iline += 1
+                if (iline == 1):
+                    continue
+                parts = line.strip().split()
+                kx, ky, a_eta = map(float, parts[:3])
+                kx_list.append(kx)
+                ky_list.append(ky)
+                if (do_first_zone):
+                    a_eta_list.append(a_eta)
 
+        kx_arr = np.array(kx_list)
+        ky_arr = np.array(ky_list)
+        kx_ky_ref = np.column_stack((kx_arr, ky_arr))
+
+        if (not do_first_zone):
+            with open(filepath, 'r') as f:
+                iline = 0
+                for line in f:
+                    iline += 1
+                    if (iline == 1):
+                        continue
+                    parts = line.strip().split()
+                    a_eta = float(parts[0])
+                    a_eta_list.append(a_eta)
+
+        this_data = np.column_stack((kx_ky_ref, np.array(a_eta_list)))
+        return this_data
+
+    # # Usage:
+    # data = parse_file(path + "../IrregularWavesDataOcean_discard/HOS/a_3d.dat") # full domain modes
+    # def get_data(time_value):
+    #     return data.get(time_value, None)
+    return (parse_single_file)
 
 @app.cell
-def _(np):
-    # list of available times
-    dt = 1.225
-    times = np.arange(0,1599.85+dt,dt) # this array contains the relevant time for the HOS data. Last AMR-Wind time is 1600s
-    time_wanted = 1600.0 # change this to update time to compare for spectrum
-    time_to_check = np.argmin(np.abs(times-time_wanted))
-    my_time = times[time_to_check]
-    return
-
-
-#@app.cell
-#def _(get_data):
-#    _zone_data = get_data(1599.85)
-#    if _zone_data is None:
-#        print('Time not found.')
-#    return
-
-@app.cell
-def _(get_data, plt, np, path):
+def _(parse_single_file, plt, np, path):
     from scipy.signal import welch, csd, butter, lfilter, freqz
     from scipy.stats import gamma
 
@@ -165,16 +185,20 @@ def _(get_data, plt, np, path):
                     )
 
         # HOS section - getting data
-        _zone_data = get_data(HOS_time)
-        zone_wave_numbers = get_data(HOS_time)
-        if _zone_data is None:
-            print(f'No data found for time {HOS_time}')
-        else:
-            I, J = (129, 256)
-            kx = zone_wave_numbers[:, 0].reshape(J, I)
-            ky = zone_wave_numbers[:, 1].reshape(J, I)
-            a_eta = _zone_data[:, 2].reshape(J, I)
-        #return a_eta, kx
+        # zone_data = get_data(HOS_time)
+        # if zone_data is None:
+        #     print(f'No data found for time {HOS_time}')
+        # else:
+        #     I, J = (129, 256)
+        #     kx = zone_data[:, 0].reshape(J, I)
+        #     ky = zone_data[:, 1].reshape(J, I)
+        #     a_eta = zone_data[:, 2].reshape(J, I)
+
+        zone_data = parse_single_file(itime)
+        I, J = (129, 256)
+        kx = zone_data[:, 0].reshape(J, I)
+        ky = zone_data[:, 1].reshape(J, I)
+        a_eta = zone_data[:, 2].reshape(J, I)
 
         # SGF section - getting data
         Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling'+str_3lev+'_fs.txt', skip_header=2, delimiter='')
