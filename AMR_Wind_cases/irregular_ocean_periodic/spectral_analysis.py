@@ -150,12 +150,25 @@ def _(get_data, plt, np, path):
         return (f, psd)
 
     def make_spectrum_plot(itime):
+        HOS_time = 0.
+        str_3lev = "00000"
+        str_4lev = "00000"
+        str_5lev = "00000"
+        if (itime == 1000):
+            HOS_time = 999.6
+            str_3lev = "05000"
+            str_4lev = "10000"
+            str_5lev = "20000"
+        elif (itime != 0):
+            raise ValueError(
+                        f"Invalid time integer ({itime}) as input argument for make_spectrum_plot()"
+                    )
+
         # HOS section - getting data
-        zone_time = 999.6 #1599.85
-        _zone_data = get_data(zone_time)
-        zone_wave_numbers = get_data(zone_time)
+        _zone_data = get_data(HOS_time)
+        zone_wave_numbers = get_data(HOS_time)
         if _zone_data is None:
-            print(f'No data found for time {zone_time}')
+            print(f'No data found for time {HOS_time}')
         else:
             I, J = (129, 256)
             kx = zone_wave_numbers[:, 0].reshape(J, I)
@@ -164,10 +177,10 @@ def _(get_data, plt, np, path):
         #return a_eta, kx
 
         # SGF section - getting data
-        Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling05000_fs.txt', skip_header=2, delimiter='')
-        Dfinal_four_levels = np.genfromtxt(path + '/SGF/4_ref_levels/sampling10000_fs.txt', skip_header=2, delimiter='')
-        Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling20000_fs.txt', skip_header=2, delimiter='')
-        Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling20000_fs.txt', skip_header=2, delimiter='')
+        Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling'+str_3lev+'_fs.txt', skip_header=2, delimiter='')
+        Dfinal_four_levels = np.genfromtxt(path + '/SGF/4_ref_levels/sampling'+str_4lev+'_fs.txt', skip_header=2, delimiter='')
+        Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling'+str_5lev+'_fs.txt', skip_header=2, delimiter='')
+        Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling'+str_5lev+'_fs.txt', skip_header=2, delimiter='')
 
         X_256 = np.zeros((_nx, _ny))
         Y_256 = np.zeros((_nx, _ny))
@@ -188,9 +201,6 @@ def _(get_data, plt, np, path):
                 Eta_CFD_five_levels[i, _j] = Dfinal_five_levels[i + _j * _nx, 2]
         
         # Calculate PSD
-
-        # works for all the cases with the domain of typical length
-        Nperseg_three_levels = 256 # plan to remove this
         SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
 
         kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0])
@@ -219,7 +229,7 @@ def _(get_data, plt, np, path):
 
         # Make plot
         _fig = plt.figure()
-        plt.title('One dimensional spectra, t = 1000 s')
+        plt.title('One dimensional spectra, t = ' + str(itime) +' s')
         plt.plot(kxCFD_three_levels, PhixCFDTotal_three_levels, label='$\\Delta z$ = 4.7 m, AR = 2')
         plt.plot(kxCFD_four_levels, PhixCFDTotal_four_levels, label='$\\Delta z$ = 2.3 m, AR = 2')
         plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
@@ -228,7 +238,7 @@ def _(get_data, plt, np, path):
         plt.xlabel('$k_x$', fontsize=14)
         plt.ylabel('E', fontsize=14)
         plt.legend()
-        plt.savefig('plotting_outputs/one_dimensional_spectra_x_1000s.png', bbox_inches='tight', dpi=300)
+        plt.savefig('plotting_outputs/one_dimensional_spectra_x_'+str(itime)+'s.png', bbox_inches='tight', dpi=300)
         
         return
     
@@ -237,6 +247,7 @@ def _(get_data, plt, np, path):
 @app.cell
 def _(make_spectrum_plot):
     make_spectrum_plot(0)
+    make_spectrum_plot(1000)
 
 @app.cell
 def _(np, path):
