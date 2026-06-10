@@ -279,6 +279,26 @@ def _(np, path):
     HOSEnergy = np.genfromtxt(path+"/HOS/vol_energy.dat",skip_header=67)
     return (HOSEnergy,)
 
+@app.cell
+def _(np):
+    def trim_array(arr):
+        tally = 0
+        latest_time = arr[arr.shape[0] - 1, 0]
+        for i in range(arr.shape[0] - 2, 0, -1):
+            if (latest_time > arr[i, 1]):
+                tally += 1
+                latest_time = arr[i, 1]
+        arr_new = np.zeros((tally,arr.shape[1]))
+        tally = 0
+        latest_time = arr[arr.shape[0] - 1, 0]
+        for i in range(arr.shape[0] - 2, 0, -1):
+            if (latest_time > arr[i, 1]):
+                tally += 1
+                latest_time = arr[i, 1]
+                arr_new[arr_new.shape[0] - tally, :] = arr[i, :]
+                
+        return arr_new
+    return trim_array
 
 @app.cell
 def _(np, path):
@@ -311,11 +331,13 @@ def _(np, path):
     return CFDE_mech256_fourlev_AR2x, CFD_time256_fourlev_AR2x
 
 @app.cell
-def _(np, path):
+def _(np, path, trim_array):
     ## Load the CFD data
     CFDE_array256_fivelev = np.genfromtxt(path+"/SGF/5_ref_levels/we00000.txt",skip_header=1,delimiter='')
     CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/SGF/5_ref_levels/we07950.txt",skip_header=1,delimiter=''), axis=0)
     CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/SGF/5_ref_levels/we10600.txt",skip_header=1,delimiter=''), axis=0)
+
+    CFDE_array256_fivelev = trim_array(CFDE_array256_fivelev)
     
 
     CFDE_mech256_fivelev = CFDE_array256_fivelev[:,2]+CFDE_array256_fivelev[:,3]
@@ -324,11 +346,17 @@ def _(np, path):
     return CFDE_mech256_fivelev, CFD_time256_fivelev
 
 @app.cell
-def _(np, path):
+def _(np, path, trim_array):
     ## Load the CFD data
     CFDE_array256_fivelev_AR2x = np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we00000.txt",skip_header=1,delimiter='')
     CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we20950.txt",skip_header=1,delimiter=''), axis=0)
-    
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we20950.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we41900.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we42250.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we43100.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we57050.txt",skip_header=1,delimiter=''), axis=0)
+
+    CFDE_array256_fivelev_AR2x = trim_array(CFDE_array256_fivelev_AR2x)    
 
     CFDE_mech256_fivelev_AR2x = CFDE_array256_fivelev_AR2x[:,2]+CFDE_array256_fivelev_AR2x[:,3]
 
@@ -374,10 +402,10 @@ def _(
     plt.plot(CFD_time256_fourlev, savgol_filter(CFDE_mech256_fourlev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 2.3 m, AR = 2')
     plt.plot(CFD_time256_fourlev_AR2x, savgol_filter(CFDE_mech256_fourlev_AR2x, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 1.2 m, AR = 4')
     plt.plot(CFD_time256_fivelev, savgol_filter(CFDE_mech256_fivelev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 1.2 m, AR = 2')
-    plt.plot(CFD_time256_fivelev_AR2x, savgol_filter(CFDE_mech256_fivelev_AR2x, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 4')
+    plt.plot(CFD_time256_fivelev_AR2x, savgol_filter(CFDE_mech256_fivelev_AR2x, 31, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 4')
     # plt.plot(CFD_time256_sixlev, savgol_filter(CFDE_mech256_sixlev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 2')
-    plt.plot(HOSEnergy[:, 0], HOSEnergy[:, 4] / ME_ref, 'k', label='HOS reference solution')
-    plt.xlim(0, 1600)
+    plt.plot(HOSEnergy[:, 0], HOSEnergy[:, 4] / ME_ref, 'k', label='HOS-Ocean solution')
+    plt.xlim(0, 1000)
     plt.xlabel('time [s]', fontsize=16)
     plt.ylabel('$E/E_0$', fontsize=16)
     plt.legend()
