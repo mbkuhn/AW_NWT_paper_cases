@@ -111,7 +111,7 @@ def _(np, path):
         return data_by_time
 
     # Usage:
-    data = parse_file(path + "/HOS/a_3d.dat") # full domain modes
+    data = parse_file(path + "../IrregularWavesDataOcean_discard/HOS/a_3d.dat") # full domain modes
 
     def get_data(time_value):
         return data.get(time_value, None)
@@ -140,7 +140,7 @@ def _(get_data):
 
 @app.cell
 def _(get_data, plt):
-    zone_time = 1599.85
+    zone_time = 999.6 #1599.85
     _zone_data = get_data(zone_time)
     zone_wave_numbers = get_data(zone_time)
     if _zone_data is None:
@@ -150,25 +150,15 @@ def _(get_data, plt):
         kx = zone_wave_numbers[:, 0].reshape(J, I)
         ky = zone_wave_numbers[:, 1].reshape(J, I)
         a_eta = _zone_data[:, 2].reshape(J, I)
-        plt.figure(figsize=(8, 6))
-        pcm = plt.pcolormesh(kx, ky, a_eta, shading='auto', cmap='viridis')
-        plt.colorbar(pcm, label='E0')
-        plt.xlabel('kx')
-        plt.ylabel('ky')
-        plt.title(f'E0 at t = {zone_time:.5f}')
-        plt.tight_layout()
-        plt.savefig('plotting_outputs/instantaneous_2D_spectra.png', bbox_inches='tight', dpi=300)
     return a_eta, kx
 
 
 @app.cell
 def _(np, path):
-    Dfinal_three_levels_half = np.genfromtxt(path + '/post_processing/half_dom_3_ref_levels/sampling16000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_three_levels = np.genfromtxt(path + '/post_processing/3_ref_levels/sampling08000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_four_levels = np.genfromtxt(path + '/post_processing/4_ref_levels/sampling16000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_fivelevs_check = np.genfromtxt(path + '/post_processing/5_ref_levels_check/sampling02120_fs.txt', skip_header=2, delimiter='')
-    Dfinal_five_levels = np.genfromtxt(path + '/post_processing/5_ref_levels/sampling32000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_wholedom_fivelevs = np.genfromtxt(path + '/post_processing/5_ref_levels_original/sampling32000_fs.txt', skip_header=2, delimiter='')
+    Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling05000_fs.txt', skip_header=2, delimiter='')
+    Dfinal_four_levels = np.genfromtxt(path + '/SGF/4_ref_levels/sampling10000_fs.txt', skip_header=2, delimiter='')
+    Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling20000_fs.txt', skip_header=2, delimiter='')
+    Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling20000_fs.txt', skip_header=2, delimiter='')
 
     _nx = 256
     _ny = 256
@@ -176,35 +166,37 @@ def _(np, path):
     X_256 = np.zeros((_nx, _ny))
     Y_256 = np.zeros((_nx, _ny))
 
-    X_256_threelevs = np.zeros((_nx, _ny))
-    Y_256_threelevs = np.zeros((_nx, _ny))
-
-    Eta_CFD_three_levels_half = np.zeros((_nx, _ny))
     Eta_CFD_three_levels = np.zeros((_nx, _ny))
     Eta_CFD_four_levels = np.zeros((_nx, _ny))
-    Eta_CFD_five_levels_check = np.zeros((_nx, _ny))
-    Eta_CFD_wholedom_fivelevs = np.zeros((_nx, _ny))
+    Eta_CFD_four_levels_AR2x = np.zeros((_nx, _ny))
     Eta_CFD_five_levels = np.zeros((_nx, _ny))
 
     for i in range(_nx):
         for _j in range(_ny):
-            X_256[i, _j] = Dfinal_wholedom_fivelevs[i + _j * _nx, 0]
-            Y_256[i, _j] = Dfinal_wholedom_fivelevs[i + _j * _nx, 1]
+            X_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 0]
+            Y_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 1]
 
-            X_256_threelevs[i, _j] = Dfinal_three_levels[i + _j * _nx, 0]
-            Y_256_threelevs[i, _j] = Dfinal_three_levels[i + _j * _nx, 1]
-
-            Eta_CFD_three_levels_half[i, _j] = Dfinal_three_levels_half[i + _j * _nx, 2]
             Eta_CFD_three_levels[i, _j] = Dfinal_three_levels[i + _j * _nx, 2]
             Eta_CFD_four_levels[i, _j] = Dfinal_four_levels[i + _j * _nx, 2]
-            Eta_CFD_five_levels_check[i, _j] = Dfinal_fivelevs_check[i + _j * _nx, 2]
-            Eta_CFD_wholedom_fivelevs[i, _j] = Dfinal_wholedom_fivelevs[i + _j * _nx, 2]
+            Eta_CFD_four_levels_AR2x[i, _j] = Dfinal_four_levels_AR2x[i + _j * _nx, 2]
             Eta_CFD_five_levels[i, _j] = Dfinal_five_levels[i + _j * _nx, 2]
-    return Eta_CFD_three_levels, Eta_CFD_wholedom_fivelevs, X_256
+    return (
+        X_256,
+        Y_256,
+        Eta_CFD_three_levels,
+        Eta_CFD_four_levels,
+        Eta_CFD_four_levels_AR2x,
+        Eta_CFD_five_levels
+    )
 
 
 @app.cell
-def _(Eta_CFD_three_levels_half, Eta_CFD_three_levels, Eta_CFD_four_levels, Eta_CFD_five_levels_check, Eta_CFD_wholedom_fivelevs, Eta_CFD_five_levels, X_256, np):
+def _(Eta_CFD_three_levels,
+      Eta_CFD_four_levels,
+      Eta_CFD_four_levels_AR2x,
+      Eta_CFD_five_levels,
+      X_256,
+      np):
     from scipy.signal import welch, csd, butter, lfilter, freqz
     from scipy.stats import gamma
 
@@ -218,80 +210,64 @@ def _(Eta_CFD_three_levels_half, Eta_CFD_three_levels, Eta_CFD_four_levels, Eta_
     Nperseg_three_levels = 256
     SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
 
-    kxCFD_three_levels_half, PhixCFDTotal_three_levels_half = PSD(SamplingFreq, Eta_CFD_three_levels_half[:, 0], Nperseg_three_levels, 256)
     kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0], Nperseg_three_levels, 256)
     kxCFD_four_levels, PhixCFDTotal_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, 0], Nperseg_three_levels, 256)
-    kxCFD_five_levels_check, PhixCFDTotal_five_levels_check = PSD(SamplingFreq, Eta_CFD_five_levels_check[:, 0], Nperseg_three_levels, 256)
-    kxCFD_wholedom_fivelevs, PhixCFDTotal_wholedom_fivelevs = PSD(SamplingFreq, Eta_CFD_wholedom_fivelevs[:, 0], Nperseg_three_levels, 256)
+    kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0], Nperseg_three_levels, 256)
     kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0], Nperseg_three_levels, 256)
 
     for _j in range(1, _ny):
-        # three levels
-        kxCFD_three_levels_half, PhixCFD_three_levels_half = PSD(SamplingFreq, Eta_CFD_three_levels_half[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_three_levels_half = PhixCFDTotal_three_levels_half + PhixCFD_three_levels_half
         # three levels
         kxCFD_three_levels, PhixCFD_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, _j], Nperseg_three_levels, 256)
         PhixCFDTotal_three_levels = PhixCFDTotal_three_levels + PhixCFD_three_levels
         # four levels
         kxCFD_four_levels, PhixCFD_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, _j], Nperseg_three_levels, 256)
         PhixCFDTotal_four_levels = PhixCFDTotal_four_levels + PhixCFD_four_levels
-        # five levels check
-        kxCFD_five_levels_check, PhixCFD_five_levels_check = PSD(SamplingFreq, Eta_CFD_five_levels_check[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_five_levels_check = PhixCFDTotal_five_levels_check + PhixCFD_five_levels_check
+        # four levels, AR 2x
+        kxCFD_four_levels_AR2x, PhixCFD_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, _j], Nperseg_three_levels, 256)
+        PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x + PhixCFD_four_levels_AR2x
         # five levels
-        kxCFD_wholedom_fivelevs, PhixCFD_wholedom_fivelevs= PSD(SamplingFreq, Eta_CFD_wholedom_fivelevs[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_wholedom_fivelevs = PhixCFDTotal_wholedom_fivelevs + PhixCFD_wholedom_fivelevs
         kxCFD_five_levels, PhixCFD_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, _j], Nperseg_three_levels, 256)
         PhixCFDTotal_five_levels = PhixCFDTotal_five_levels + PhixCFD_five_levels
 
 
-    PhixCFDTotal_256_three_levels = PhixCFDTotal_three_levels_half / (_ny)
     PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
     PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (_ny)
-    PhixCFDTotal_five_levels_check = PhixCFDTotal_five_levels_check / (_ny)
+    PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x / (_ny)
     PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (_ny)
-    PhixCFDTotal_wholedom_fivelevs = PhixCFDTotal_wholedom_fivelevs / (_ny)
 
     return (
-        PhixCFDTotal_256_three_levels,
         PhixCFDTotal_three_levels,
         PhixCFDTotal_four_levels,
-        PhixCFDTotal_five_levels_check,
-        PhixCFDTotal_wholedom_fivelevs,
+        PhixCFDTotal_four_levels_AR2x,
         PhixCFDTotal_five_levels,
-        kxCFD_three_levels_half,
         kxCFD_three_levels,
         kxCFD_four_levels,
-        kxCFD_five_levels_check,
-        kxCFD_wholedom_fivelevs,
+        kxCFD_four_levels_AR2x,
         kxCFD_five_levels,
     )
 
 
 @app.cell
 def _(
-    PhixCFDTotal_256_three_levels,
     PhixCFDTotal_three_levels,
     PhixCFDTotal_four_levels,
-    PhixCFDTotal_five_levels_check,
-    PhixCFDTotal_wholedom_fivelevs,
+    PhixCFDTotal_four_levels_AR2x,
     PhixCFDTotal_five_levels,
     a_eta,
     kx,
-    kxCFD_three_levels_half,
     kxCFD_three_levels,
     kxCFD_four_levels,
-    kxCFD_five_levels_check,
-    kxCFD_wholedom_fivelevs,
+    kxCFD_four_levels_AR2x,
     kxCFD_five_levels,
     plt,
 ):
     _fig = plt.figure(2)
-    plt.title('One dimensional spectra, t = 1600 s')
+    plt.title('One dimensional spectra, t = 1000 s')
     plt.plot(kxCFD_three_levels, PhixCFDTotal_three_levels, label='$\\Delta z$ = 4.7 m, AR = 2')
     plt.plot(kxCFD_four_levels, PhixCFDTotal_four_levels, label='$\\Delta z$ = 2.3 m, AR = 2')
+    plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
     plt.plot(kxCFD_five_levels, PhixCFDTotal_five_levels, label='$\\Delta z$ = 1.2 m, AR = 2')
-    plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS state at t=1600')
+    plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
     plt.xlabel('$k_x$', fontsize=14)
     plt.ylabel('E', fontsize=14)
     plt.legend()
@@ -309,17 +285,7 @@ def _(np, path):
 @app.cell
 def _(np, path):
     ## Load the CFD data
-    CFDE_array256_threelev_half = np.genfromtxt(path+"/post_processing/half_dom_3_ref_levels/we00000.txt",skip_header=1,delimiter='')
-
-    CFDE_mech256_threelev_half = CFDE_array256_threelev_half[:,2]+CFDE_array256_threelev_half[:,3]
-
-    CFD_time256_threelev_half = CFDE_array256_threelev_half[:,1]
-    return CFDE_mech256_threelev_half, CFD_time256_threelev_half
-
-@app.cell
-def _(np, path):
-    ## Load the CFD data
-    CFDE_array256_threelev = np.genfromtxt(path+"/post_processing/3_ref_levels/we00000.txt",skip_header=1,delimiter='')
+    CFDE_array256_threelev = np.genfromtxt(path+"/SGF/3_ref_levels/we00000.txt",skip_header=1,delimiter='')
 
     CFDE_mech256_threelev = CFDE_array256_threelev[:,2]+CFDE_array256_threelev[:,3]
 
@@ -329,7 +295,7 @@ def _(np, path):
 @app.cell
 def _(np, path):
     ## Load the CFD data
-    CFDE_array256_fourlev = np.genfromtxt(path+"/post_processing/4_ref_levels/we00000.txt",skip_header=1,delimiter='')
+    CFDE_array256_fourlev = np.genfromtxt(path+"/SGF/4_ref_levels/we00000.txt",skip_header=1,delimiter='')
 
     CFDE_mech256_fourlev = CFDE_array256_fourlev[:,2]+CFDE_array256_fourlev[:,3]
 
@@ -339,35 +305,19 @@ def _(np, path):
 @app.cell
 def _(np, path):
     ## Load the CFD data
-    CFDE_array256_fivelev_check = np.genfromtxt(path+"/post_processing/5_ref_levels_check/we00000.txt",skip_header=1,delimiter='')
+    CFDE_array256_fourlev_AR2x = np.genfromtxt(path+"/SGF/4_ref_levels_AR2x/we00000.txt",skip_header=1,delimiter='')
 
-    CFDE_mech256_fivelev_check = CFDE_array256_fivelev_check[:,2]+CFDE_array256_fivelev_check[:,3]
+    CFDE_mech256_fourlev_AR2x = CFDE_array256_fourlev_AR2x[:,2]+CFDE_array256_fourlev_AR2x[:,3]
 
-    CFD_time256_fivelev_check = CFDE_array256_fivelev_check[:,1]
-    return CFDE_mech256_fivelev_check, CFD_time256_fivelev_check
-
-
-@app.cell
-def _(np, path):
-    ## Load the CFD data
-    CFDE_array256_wholedom_fivelev = np.genfromtxt(path+"/post_processing/5_ref_levels_original/we00000.txt",skip_header=1,delimiter='')
-    CFDE_array256_wholedom_fivelev = np.append(CFDE_array256_wholedom_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels_original/we08150.txt",skip_header=1,delimiter=''), axis=0)
-    CFDE_array256_wholedom_fivelev = np.append(CFDE_array256_wholedom_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels_original/we09000.txt",skip_header=1,delimiter=''), axis=0)
-    CFDE_array256_wholedom_fivelev = np.append(CFDE_array256_wholedom_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels_original/we14950.txt",skip_header=1,delimiter=''), axis=0)
-    CFDE_array256_wholedom_fivelev = np.append(CFDE_array256_wholedom_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels_original/we22150.txt",skip_header=1,delimiter=''), axis=0)
-
-
-    CFDE_mech256_wholedom_fivelev = CFDE_array256_wholedom_fivelev[:,2]+CFDE_array256_wholedom_fivelev[:,3]
-
-    CFD_time256_wholedom_fivelev = CFDE_array256_wholedom_fivelev[:,1]
-    return CFDE_mech256_wholedom_fivelev, CFD_time256_wholedom_fivelev
+    CFD_time256_fourlev_AR2x = CFDE_array256_fourlev_AR2x[:,1]
+    return CFDE_mech256_fourlev_AR2x, CFD_time256_fourlev_AR2x
 
 @app.cell
 def _(np, path):
     ## Load the CFD data
-    CFDE_array256_fivelev = np.genfromtxt(path+"/post_processing/5_ref_levels/we00000.txt",skip_header=1,delimiter='')
-    CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels/we07950.txt",skip_header=1,delimiter=''), axis=0)
-    CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/post_processing/5_ref_levels/we10600.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev = np.genfromtxt(path+"/SGF/5_ref_levels/we00000.txt",skip_header=1,delimiter='')
+    CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/SGF/5_ref_levels/we07950.txt",skip_header=1,delimiter=''), axis=0)
+    CFDE_array256_fivelev = np.append(CFDE_array256_fivelev, np.genfromtxt(path+"/SGF/5_ref_levels/we10600.txt",skip_header=1,delimiter=''), axis=0)
     
 
     CFDE_mech256_fivelev = CFDE_array256_fivelev[:,2]+CFDE_array256_fivelev[:,3]
@@ -375,30 +325,59 @@ def _(np, path):
     CFD_time256_fivelev = CFDE_array256_fivelev[:,1]
     return CFDE_mech256_fivelev, CFD_time256_fivelev
 
+@app.cell
+def _(np, path):
+    ## Load the CFD data
+    CFDE_array256_fivelev_AR2x = np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we00000.txt",skip_header=1,delimiter='')
+    CFDE_array256_fivelev_AR2x = np.append(CFDE_array256_fivelev_AR2x, np.genfromtxt(path+"/SGF/5_ref_levels_AR2x/we20950.txt",skip_header=1,delimiter=''), axis=0)
+    
+
+    CFDE_mech256_fivelev_AR2x = CFDE_array256_fivelev_AR2x[:,2]+CFDE_array256_fivelev_AR2x[:,3]
+
+    CFD_time256_fivelev_AR2x = CFDE_array256_fivelev_AR2x[:,1]
+    return CFDE_mech256_fivelev_AR2x, CFD_time256_fivelev_AR2x
+
+# @app.cell
+# def _(np, path):
+#     ## Load the CFD data
+#     CFDE_array256_sixlev = np.genfromtxt(path+"/SGF/6_ref_levels/we00000.txt",skip_header=1,delimiter='')
+#     CFDE_array256_sixlev = np.append(CFDE_array256_sixlev, np.genfromtxt(path+"/SGF/6_ref_levels/we22000.txt",skip_header=1,delimiter=''), axis=0)
+#     CFDE_array256_sixlev = np.append(CFDE_array256_sixlev, np.genfromtxt(path+"/SGF/6_ref_levels/we24000.txt",skip_header=1,delimiter=''), axis=0)
+#     
+# 
+#     CFDE_mech256_sixlev = CFDE_array256_sixlev[:,2]+CFDE_array256_sixlev[:,3]
+# 
+#     CFD_time256_sixlev = CFDE_array256_sixlev[:,1]
+#     return CFDE_mech256_sixlev, CFD_time256_sixlev
+
 
 @app.cell
 def _(
-    CFDE_mech256_threelev_half,
     CFDE_mech256_threelev,
     CFDE_mech256_fourlev,
-    CFDE_mech256_fivelev_check,
-    CFDE_mech256_wholedom_fivelev,
+    CFDE_mech256_fourlev_AR2x,
     CFDE_mech256_fivelev,
-    CFD_time256_threelev_half,
+    CFDE_mech256_fivelev_AR2x,
+    # CFDE_mech256_sixlev,
     CFD_time256_threelev,
     CFD_time256_fourlev,
-    CFD_time256_fivelev_check,
-    CFD_time256_wholedom_fivelev,
+    CFD_time256_fourlev_AR2x,
     CFD_time256_fivelev,
+    CFD_time256_fivelev_AR2x,
+    # CFD_time256_sixlev,
     HOSEnergy,
     plt,
 ):
     _fig = plt.figure(1)
     from scipy.signal import savgol_filter
     ME_ref = HOSEnergy[0, 4]
-    plt.plot(CFD_time256_threelev, savgol_filter(CFDE_mech256_threelev, 11, 3) / CFDE_mech256_threelev[4], label='$\\Delta z$ = 4.7 m, AR = 2')
-    plt.plot(CFD_time256_fourlev, savgol_filter(CFDE_mech256_fourlev, 11, 3) / CFDE_mech256_fourlev[8], label='$\\Delta z$ = 2.3 m, AR = 2')
-    plt.plot(CFD_time256_fivelev, savgol_filter(CFDE_mech256_fivelev, 11, 3) / CFDE_mech256_fivelev[16], label='$\\Delta z$ = 1.2 m, AR = 2')
+    ME_ref_CFD = CFDE_mech256_fivelev[0]
+    plt.plot(CFD_time256_threelev, savgol_filter(CFDE_mech256_threelev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 4.7 m, AR = 2')
+    plt.plot(CFD_time256_fourlev, savgol_filter(CFDE_mech256_fourlev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 2.3 m, AR = 2')
+    plt.plot(CFD_time256_fourlev_AR2x, savgol_filter(CFDE_mech256_fourlev_AR2x, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 1.2 m, AR = 4')
+    plt.plot(CFD_time256_fivelev, savgol_filter(CFDE_mech256_fivelev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 1.2 m, AR = 2')
+    plt.plot(CFD_time256_fivelev_AR2x, savgol_filter(CFDE_mech256_fivelev_AR2x, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 4')
+    # plt.plot(CFD_time256_sixlev, savgol_filter(CFDE_mech256_sixlev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 2')
     plt.plot(HOSEnergy[:, 0], HOSEnergy[:, 4] / ME_ref, 'k', label='HOS reference solution')
     plt.xlim(0, 1600)
     plt.xlabel('time [s]', fontsize=16)
