@@ -145,8 +145,8 @@ def _(get_data, plt, np, path):
     _nx = 256
     _ny = 256
 
-    def PSD(frequency, TimeSeries, NumbModes, nfft):
-        f, psd = welch(TimeSeries, fs=frequency, nperseg=NumbModes, scaling='spectrum', nfft=256)
+    def PSD(frequency, TimeSeries):
+        f, psd = welch(TimeSeries, fs=frequency, scaling='spectrum')
         return (f, psd)
 
     def make_spectrum_plot(itime):
@@ -193,23 +193,23 @@ def _(get_data, plt, np, path):
         Nperseg_three_levels = 256 # plan to remove this
         SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
 
-        kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0], Nperseg_three_levels, 256)
-        kxCFD_four_levels, PhixCFDTotal_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, 0], Nperseg_three_levels, 256)
-        kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0], Nperseg_three_levels, 256)
-        kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0], Nperseg_three_levels, 256)
+        kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0])
+        kxCFD_four_levels, PhixCFDTotal_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, 0])
+        kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0])
+        kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0])
 
         for _j in range(1, _ny):
             # three levels
-            kxCFD_three_levels, PhixCFD_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, _j], Nperseg_three_levels, 256)
+            kxCFD_three_levels, PhixCFD_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, _j])
             PhixCFDTotal_three_levels = PhixCFDTotal_three_levels + PhixCFD_three_levels
             # four levels
-            kxCFD_four_levels, PhixCFD_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, _j], Nperseg_three_levels, 256)
+            kxCFD_four_levels, PhixCFD_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, _j])
             PhixCFDTotal_four_levels = PhixCFDTotal_four_levels + PhixCFD_four_levels
             # four levels, AR 2x
-            kxCFD_four_levels_AR2x, PhixCFD_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, _j], Nperseg_three_levels, 256)
+            kxCFD_four_levels_AR2x, PhixCFD_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, _j])
             PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x + PhixCFD_four_levels_AR2x
             # five levels
-            kxCFD_five_levels, PhixCFD_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, _j], Nperseg_three_levels, 256)
+            kxCFD_five_levels, PhixCFD_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, _j])
             PhixCFDTotal_five_levels = PhixCFDTotal_five_levels + PhixCFD_five_levels
 
         PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
