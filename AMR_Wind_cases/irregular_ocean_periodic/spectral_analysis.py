@@ -130,150 +130,113 @@ def _(np):
     return
 
 
-@app.cell
-def _(get_data):
-    _zone_data = get_data(1599.85)
-    if _zone_data is None:
-        print('Time not found.')
-    return
-
-
-@app.cell
-def _(get_data, plt):
-    zone_time = 999.6 #1599.85
-    _zone_data = get_data(zone_time)
-    zone_wave_numbers = get_data(zone_time)
-    if _zone_data is None:
-        print(f'No data found for time {zone_time}')
-    else:
-        I, J = (129, 256)
-        kx = zone_wave_numbers[:, 0].reshape(J, I)
-        ky = zone_wave_numbers[:, 1].reshape(J, I)
-        a_eta = _zone_data[:, 2].reshape(J, I)
-    return a_eta, kx
-
+#@app.cell
+#def _(get_data):
+#    _zone_data = get_data(1599.85)
+#    if _zone_data is None:
+#        print('Time not found.')
+#    return
 
 @app.cell
-def _(np, path):
-    Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling05000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_four_levels = np.genfromtxt(path + '/SGF/4_ref_levels/sampling10000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling20000_fs.txt', skip_header=2, delimiter='')
-    Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling20000_fs.txt', skip_header=2, delimiter='')
+def _(get_data, plt, np, path):
+    from scipy.signal import welch, csd, butter, lfilter, freqz
+    from scipy.stats import gamma
 
     _nx = 256
     _ny = 256
 
-    X_256 = np.zeros((_nx, _ny))
-    Y_256 = np.zeros((_nx, _ny))
-
-    Eta_CFD_three_levels = np.zeros((_nx, _ny))
-    Eta_CFD_four_levels = np.zeros((_nx, _ny))
-    Eta_CFD_four_levels_AR2x = np.zeros((_nx, _ny))
-    Eta_CFD_five_levels = np.zeros((_nx, _ny))
-
-    for i in range(_nx):
-        for _j in range(_ny):
-            X_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 0]
-            Y_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 1]
-
-            Eta_CFD_three_levels[i, _j] = Dfinal_three_levels[i + _j * _nx, 2]
-            Eta_CFD_four_levels[i, _j] = Dfinal_four_levels[i + _j * _nx, 2]
-            Eta_CFD_four_levels_AR2x[i, _j] = Dfinal_four_levels_AR2x[i + _j * _nx, 2]
-            Eta_CFD_five_levels[i, _j] = Dfinal_five_levels[i + _j * _nx, 2]
-    return (
-        X_256,
-        Y_256,
-        Eta_CFD_three_levels,
-        Eta_CFD_four_levels,
-        Eta_CFD_four_levels_AR2x,
-        Eta_CFD_five_levels
-    )
-
-
-@app.cell
-def _(Eta_CFD_three_levels,
-      Eta_CFD_four_levels,
-      Eta_CFD_four_levels_AR2x,
-      Eta_CFD_five_levels,
-      X_256,
-      np):
-    from scipy.signal import welch, csd, butter, lfilter, freqz
-    from scipy.stats import gamma
-
     def PSD(frequency, TimeSeries, NumbModes, nfft):
         f, psd = welch(TimeSeries, fs=frequency, nperseg=NumbModes, scaling='spectrum', nfft=256)
         return (f, psd)
-    _nx = 256
-    _ny = _nx
 
-    # works for all the cases with the domain of typical length
-    Nperseg_three_levels = 256
-    SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
+    def make_spectrum_plot(itime):
+        # HOS section - getting data
+        zone_time = 999.6 #1599.85
+        _zone_data = get_data(zone_time)
+        zone_wave_numbers = get_data(zone_time)
+        if _zone_data is None:
+            print(f'No data found for time {zone_time}')
+        else:
+            I, J = (129, 256)
+            kx = zone_wave_numbers[:, 0].reshape(J, I)
+            ky = zone_wave_numbers[:, 1].reshape(J, I)
+            a_eta = _zone_data[:, 2].reshape(J, I)
+        #return a_eta, kx
 
-    kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0], Nperseg_three_levels, 256)
-    kxCFD_four_levels, PhixCFDTotal_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, 0], Nperseg_three_levels, 256)
-    kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0], Nperseg_three_levels, 256)
-    kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0], Nperseg_three_levels, 256)
+        # SGF section - getting data
+        Dfinal_three_levels = np.genfromtxt(path + '/SGF/3_ref_levels/sampling05000_fs.txt', skip_header=2, delimiter='')
+        Dfinal_four_levels = np.genfromtxt(path + '/SGF/4_ref_levels/sampling10000_fs.txt', skip_header=2, delimiter='')
+        Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling20000_fs.txt', skip_header=2, delimiter='')
+        Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling20000_fs.txt', skip_header=2, delimiter='')
 
-    for _j in range(1, _ny):
-        # three levels
-        kxCFD_three_levels, PhixCFD_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_three_levels = PhixCFDTotal_three_levels + PhixCFD_three_levels
-        # four levels
-        kxCFD_four_levels, PhixCFD_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_four_levels = PhixCFDTotal_four_levels + PhixCFD_four_levels
-        # four levels, AR 2x
-        kxCFD_four_levels_AR2x, PhixCFD_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x + PhixCFD_four_levels_AR2x
-        # five levels
-        kxCFD_five_levels, PhixCFD_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, _j], Nperseg_three_levels, 256)
-        PhixCFDTotal_five_levels = PhixCFDTotal_five_levels + PhixCFD_five_levels
+        X_256 = np.zeros((_nx, _ny))
+        Y_256 = np.zeros((_nx, _ny))
 
+        Eta_CFD_three_levels = np.zeros((_nx, _ny))
+        Eta_CFD_four_levels = np.zeros((_nx, _ny))
+        Eta_CFD_four_levels_AR2x = np.zeros((_nx, _ny))
+        Eta_CFD_five_levels = np.zeros((_nx, _ny))
 
-    PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
-    PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (_ny)
-    PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x / (_ny)
-    PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (_ny)
+        for i in range(_nx):
+            for _j in range(_ny):
+                X_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 0]
+                Y_256[i, _j] = Dfinal_five_levels[i + _j * _nx, 1]
 
-    return (
-        PhixCFDTotal_three_levels,
-        PhixCFDTotal_four_levels,
-        PhixCFDTotal_four_levels_AR2x,
-        PhixCFDTotal_five_levels,
-        kxCFD_three_levels,
-        kxCFD_four_levels,
-        kxCFD_four_levels_AR2x,
-        kxCFD_five_levels,
-    )
+                Eta_CFD_three_levels[i, _j] = Dfinal_three_levels[i + _j * _nx, 2]
+                Eta_CFD_four_levels[i, _j] = Dfinal_four_levels[i + _j * _nx, 2]
+                Eta_CFD_four_levels_AR2x[i, _j] = Dfinal_four_levels_AR2x[i + _j * _nx, 2]
+                Eta_CFD_five_levels[i, _j] = Dfinal_five_levels[i + _j * _nx, 2]
+        
+        # Calculate PSD
 
+        # works for all the cases with the domain of typical length
+        Nperseg_three_levels = 256 # plan to remove this
+        SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
+
+        kxCFD_three_levels, PhixCFDTotal_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, 0], Nperseg_three_levels, 256)
+        kxCFD_four_levels, PhixCFDTotal_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, 0], Nperseg_three_levels, 256)
+        kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0], Nperseg_three_levels, 256)
+        kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0], Nperseg_three_levels, 256)
+
+        for _j in range(1, _ny):
+            # three levels
+            kxCFD_three_levels, PhixCFD_three_levels = PSD(SamplingFreq, Eta_CFD_three_levels[:, _j], Nperseg_three_levels, 256)
+            PhixCFDTotal_three_levels = PhixCFDTotal_three_levels + PhixCFD_three_levels
+            # four levels
+            kxCFD_four_levels, PhixCFD_four_levels = PSD(SamplingFreq, Eta_CFD_four_levels[:, _j], Nperseg_three_levels, 256)
+            PhixCFDTotal_four_levels = PhixCFDTotal_four_levels + PhixCFD_four_levels
+            # four levels, AR 2x
+            kxCFD_four_levels_AR2x, PhixCFD_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, _j], Nperseg_three_levels, 256)
+            PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x + PhixCFD_four_levels_AR2x
+            # five levels
+            kxCFD_five_levels, PhixCFD_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, _j], Nperseg_three_levels, 256)
+            PhixCFDTotal_five_levels = PhixCFDTotal_five_levels + PhixCFD_five_levels
+
+        PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
+        PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (_ny)
+        PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x / (_ny)
+        PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (_ny)
+
+        # Make plot
+        _fig = plt.figure()
+        plt.title('One dimensional spectra, t = 1000 s')
+        plt.plot(kxCFD_three_levels, PhixCFDTotal_three_levels, label='$\\Delta z$ = 4.7 m, AR = 2')
+        plt.plot(kxCFD_four_levels, PhixCFDTotal_four_levels, label='$\\Delta z$ = 2.3 m, AR = 2')
+        plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
+        plt.plot(kxCFD_five_levels, PhixCFDTotal_five_levels, label='$\\Delta z$ = 1.2 m, AR = 2')
+        plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
+        plt.xlabel('$k_x$', fontsize=14)
+        plt.ylabel('E', fontsize=14)
+        plt.legend()
+        plt.savefig('plotting_outputs/one_dimensional_spectra_x_1000s.png', bbox_inches='tight', dpi=300)
+        
+        return
+    
+    return make_spectrum_plot
 
 @app.cell
-def _(
-    PhixCFDTotal_three_levels,
-    PhixCFDTotal_four_levels,
-    PhixCFDTotal_four_levels_AR2x,
-    PhixCFDTotal_five_levels,
-    a_eta,
-    kx,
-    kxCFD_three_levels,
-    kxCFD_four_levels,
-    kxCFD_four_levels_AR2x,
-    kxCFD_five_levels,
-    plt,
-):
-    _fig = plt.figure(2)
-    plt.title('One dimensional spectra, t = 1000 s')
-    plt.plot(kxCFD_three_levels, PhixCFDTotal_three_levels, label='$\\Delta z$ = 4.7 m, AR = 2')
-    plt.plot(kxCFD_four_levels, PhixCFDTotal_four_levels, label='$\\Delta z$ = 2.3 m, AR = 2')
-    plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
-    plt.plot(kxCFD_five_levels, PhixCFDTotal_five_levels, label='$\\Delta z$ = 1.2 m, AR = 2')
-    plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
-    plt.xlabel('$k_x$', fontsize=14)
-    plt.ylabel('E', fontsize=14)
-    plt.legend()
-    plt.savefig('plotting_outputs/one_dimensional_spectra_x.png', bbox_inches='tight', dpi=300)
-    return
-
+def _(make_spectrum_plot):
+    make_spectrum_plot(0)
 
 @app.cell
 def _(np, path):
