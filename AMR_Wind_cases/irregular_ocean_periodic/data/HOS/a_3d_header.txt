@@ -1,0 +1,67 @@
+#---- General info test case studied
+#     Restart previous computation::                      i_restart::     0
+#      Choice of the computed case::                         i_case::     3
+#--- Geometry of the horizontal domain
+#Length of the studied zone in x-d::                           xlen::    4.0000000000000000E+01
+#Length of the studied zone in y-d::                           ylen::    4.0000000000000000E+01
+#--- Relaxation zones
+#            absorption/generation::                          i_rlx::     0
+#                       zones type::                          i_abs::     1
+#             First absorbing zone::                        L_abs_1::    0.0000000000000000E+00
+#                  Generation zone::                         L_gene::    0.0000000000000000E+00
+#            Second absorbing zone::                        L_abs_2::    0.0000000000000000E+00
+#--- Time stuff
+#       Duration of the simulation::                         T_stop::    1.6047500000000000E+03
+#      Sampling frequency (output)::                          f_out::    8.1632653061224492E-01
+#           Tolerance of RK scheme::                          toler::    9.9999999999999995E-08
+#        Dommermuth initialisation::                              n::     4
+#        Dommermuth initialisation::                             Ta::    1.2250000000000000E+02
+#--- Physical parameters
+#                          Gravity::                           grav::    9.8100000000000005E+00
+#                 Mean water depth::                          depth::    1.0000000000000000E+03
+#--- Current parameters
+#                     Current type::                         i_curr::     0
+#        Constant current velocity::                            u_0::    1.0000000000000000E+00
+#       First current varying zone::                       L_curr_1::    1.0000000000000000E+01
+#      Second current varying zone::                       L_curr_2::    1.0000000000000000E+01
+#--- Bathymetry parameters
+#             Choice of the method::                       i_method::     0
+#                bottom definition::                       i_bottom::     0
+#                Total water depth::                      depth_tot::    1.0000000000000000E+03
+#Minimum water depth (real number ::                      depth_min::    3.0000000000000000E+01
+# Name of the input bathymetry fil::                     bathy_file:: /bathy_new_cut.dat                                                                                  
+#             Zone 1 - y-direction::                          L_1_y::    0.0000000000000000E+00
+#             Zone 2 - y-direction::                          L_2_y::    0.0000000000000000E+00
+#            reflection conditions::                          i_sym::     0
+#--- Irregular waves (i_case=3x)
+#                 Peak period in s::                        Tp_real::    1.2250000000000000E+01
+#     Significant wave height in m::                        Hs_real::    6.0000000000000000E+00
+#                 JONSWAP Spectrum::                          gamma::    1.0000000000000000E+00
+#   use of TMA spectrum 1=yes,0=no::                          i_TMA::     0
+#          Directionality function::                     i_dir_JSWP::     0
+#          Directionality (Dysthe)::                           beta::    6.9999999999999996E-01
+#         Random phases generation::                  random_phases::     1
+#  Name of the input spectrum file::                  spectrum_file:: SPEC_20181006-01_SKOREA.2D                                                                          
+#--- Soliton''s parameters (case 4x)
+#              Carrier wave number::                             k0::    5.3221400000000001E+00
+#    Steepness of the carrier wave::                           eps0::    2.0000000000000000E-02
+#   Initial location soliton (dim)::                             x0::    6.0000000000000000E+01
+#--- Output files
+#                  Tecplot version::                        tecplot::     1
+#        Output: 1-dim. 0-non dim.::                      i_out_dim::     1
+#       3d free surface quantities::                           i_3d::     1
+#                         3d modes::                         i_a_3d::     1
+#     2d free surface, center line::                           i_2d::     0
+#            Wave probes in domain::                         i_prob::     0
+#         Swense output 1=yes,0=no::                           i_sw::     1
+#--- Numerical parameters
+#      Modes number in x-direction::                             n1::   256
+#      Modes number in y-direction::                             n2::   256
+#HOS nonlinearity order (free-surf::                              M::     3
+#  HOS nonlinearity order (bottom)::                            M_l::     1
+#        Dealiasing in x-direction::                             p1::     3
+#        Dealiasing in y-direction::                             p2::     3
+#          Output points in x-dir.::                         n1_out::   256
+#          Output points in y-dir.::                         n2_out::     1
+TITLE=" 3D modes "
+VARIABLES="kx","ky","a-eta","a-phis","LOG10-a-eta","LOG10-a-phis"

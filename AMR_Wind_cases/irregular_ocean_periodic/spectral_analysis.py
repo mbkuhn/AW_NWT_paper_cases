@@ -22,7 +22,7 @@ def _():
 
 @app.cell
 def _():
-    path = '/Users/mkuhn/testruns_data/IrregularWavesDataOcean/'
+    path = 'data/'
     return (path,)
 
 
