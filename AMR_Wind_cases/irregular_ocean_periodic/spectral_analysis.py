@@ -208,6 +208,7 @@ def _(parse_single_file, plt, np, path):
         Dfinal_four_levels_AR2x = np.genfromtxt(path + '/SGF/4_ref_levels_AR2x/sampling'+str_5lev+'_fs.txt', skip_header=2, delimiter='')
         Dfinal_five_levels = np.genfromtxt(path + '/SGF/5_ref_levels/sampling'+str_5lev+'_fs.txt', skip_header=2, delimiter='')
         Dfinal_five_levels_AR2x = np.genfromtxt(path + '/SGF/5_ref_levels_AR2x/sampling'+str_5lev_AR2x+'_fs.txt', skip_header=2, delimiter='')
+        Dfinal_ref = np.genfromtxt(path + '/SGF/5_ref_levels_AR2x/ow_sampling'+str_5lev_AR2x+'_fs.txt', skip_header=2, delimiter='')
 
         X_256 = np.zeros((_nx, _ny))
         Y_256 = np.zeros((_nx, _ny))
@@ -217,6 +218,7 @@ def _(parse_single_file, plt, np, path):
         Eta_CFD_four_levels_AR2x = np.zeros((_nx, _ny))
         Eta_CFD_five_levels = np.zeros((_nx, _ny))
         Eta_CFD_five_levels_AR2x = np.zeros((_nx, _ny))
+        Eta_CFD_ref = np.zeros((_nx,_ny))
 
         for i in range(_nx):
             for _j in range(_ny):
@@ -228,6 +230,7 @@ def _(parse_single_file, plt, np, path):
                 Eta_CFD_four_levels_AR2x[i, _j] = Dfinal_four_levels_AR2x[i + _j * _nx, 2]
                 Eta_CFD_five_levels[i, _j] = Dfinal_five_levels[i + _j * _nx, 2]
                 Eta_CFD_five_levels_AR2x[i, _j] = Dfinal_five_levels_AR2x[i + _j * _nx, 2]
+                Eta_CFD_ref[i, _j] = Dfinal_ref[i + _j * _nx, 2]
         
         # Calculate PSD
         SamplingFreq = 2 * np.pi / (X_256[1, 0] - X_256[0, 0])
@@ -237,6 +240,7 @@ def _(parse_single_file, plt, np, path):
         kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x = PSD(SamplingFreq, Eta_CFD_four_levels_AR2x[:, 0])
         kxCFD_five_levels, PhixCFDTotal_five_levels = PSD(SamplingFreq, Eta_CFD_five_levels[:, 0])
         kxCFD_five_levels_AR2x, PhixCFDTotal_five_levels_AR2x = PSD(SamplingFreq, Eta_CFD_five_levels_AR2x[:, 0])
+        kxCFD_ref, PhixCFDTotal_ref = PSD(SamplingFreq, Eta_CFD_ref[:, 0])
 
         for _j in range(1, _ny):
             # three levels
@@ -254,12 +258,16 @@ def _(parse_single_file, plt, np, path):
             # five levels, AR 2x
             kxCFD_five_levels_AR2x, PhixCFD_five_levels_AR2x = PSD(SamplingFreq, Eta_CFD_five_levels_AR2x[:, _j])
             PhixCFDTotal_five_levels_AR2x = PhixCFDTotal_five_levels_AR2x + PhixCFD_five_levels_AR2x
+            # five levels, AR 2x - ow_vof
+            kxCFD_ref, PhixCFD_ref = PSD(SamplingFreq, Eta_CFD_ref[:, _j])
+            PhixCFDTotal_ref = PhixCFDTotal_ref + PhixCFD_ref
 
         PhixCFDTotal_three_levels = PhixCFDTotal_three_levels / (_ny)
         PhixCFDTotal_four_levels = PhixCFDTotal_four_levels / (_ny)
         PhixCFDTotal_four_levels_AR2x = PhixCFDTotal_four_levels_AR2x / (_ny)
         PhixCFDTotal_five_levels = PhixCFDTotal_five_levels / (_ny)
         PhixCFDTotal_five_levels_AR2x = PhixCFDTotal_five_levels_AR2x / (_ny)
+        PhixCFDTotal_ref = PhixCFDTotal_ref / (_ny)
 
         # Make plot
         _fig = plt.figure()
@@ -269,6 +277,7 @@ def _(parse_single_file, plt, np, path):
         plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
         plt.plot(kxCFD_five_levels, PhixCFDTotal_five_levels, label='$\\Delta z$ = 1.2 m, AR = 2')
         plt.plot(kxCFD_five_levels_AR2x, PhixCFDTotal_five_levels_AR2x, label='$\\Delta z$ = 0.6 m, AR = 4')
+        plt.plot(kxCFD_ref, PhixCFDTotal_ref, label='Target')
         plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
         plt.xlabel('$k_x$', fontsize=14)
         plt.ylabel('E', fontsize=14)
