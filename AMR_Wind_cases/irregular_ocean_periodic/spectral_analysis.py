@@ -166,7 +166,7 @@ def _(parse_single_file, plt, np, path):
     _ny = 256
 
     def PSD(frequency, TimeSeries):
-        f, psd = welch(TimeSeries, fs=frequency, scaling='spectrum')
+        f, psd = welch(TimeSeries, fs=frequency, window='hamming', scaling='spectrum')
         return (f, psd)
 
     def make_spectrum_plot(itime):
@@ -271,16 +271,16 @@ def _(parse_single_file, plt, np, path):
 
         # Make plot
         _fig = plt.figure()
-        plt.title('One dimensional spectra, t = ' + str(itime) +' s')
+        plt.title('One dimensional power spectra, t = ' + str(itime) +' s')
         plt.plot(kxCFD_three_levels, PhixCFDTotal_three_levels, label='$\\Delta z$ = 4.7 m, AR = 2')
         plt.plot(kxCFD_four_levels, PhixCFDTotal_four_levels, label='$\\Delta z$ = 2.3 m, AR = 2')
         plt.plot(kxCFD_four_levels_AR2x, PhixCFDTotal_four_levels_AR2x, label='$\\Delta z$ = 1.2 m, AR = 4')
         plt.plot(kxCFD_five_levels, PhixCFDTotal_five_levels, label='$\\Delta z$ = 1.2 m, AR = 2')
         plt.plot(kxCFD_five_levels_AR2x, PhixCFDTotal_five_levels_AR2x, label='$\\Delta z$ = 0.6 m, AR = 4')
-        plt.plot(kxCFD_ref, PhixCFDTotal_ref, label='Target')
-        plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
+        plt.plot(kxCFD_ref, PhixCFDTotal_ref, 'k', label='Target')
+        #plt.plot(kx[127, :], a_eta[127, :], 'k', label='HOS-Ocean')
         plt.xlabel('$k_x$', fontsize=14)
-        plt.ylabel('E', fontsize=14)
+        plt.ylabel('$P(\\eta)$', fontsize=14)
         plt.legend()
         plt.savefig('plotting_outputs/one_dimensional_spectra_x_'+str(itime)+'s.png', bbox_inches='tight', dpi=300)
         
@@ -424,7 +424,8 @@ def _(
     plt.plot(CFD_time256_fivelev, savgol_filter(CFDE_mech256_fivelev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 1.2 m, AR = 2')
     plt.plot(CFD_time256_fivelev_AR2x, savgol_filter(CFDE_mech256_fivelev_AR2x, 31, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 4')
     # plt.plot(CFD_time256_sixlev, savgol_filter(CFDE_mech256_sixlev, 11, 3) / ME_ref_CFD, label='$\\Delta z$ = 0.6 m, AR = 2')
-    plt.plot(HOSEnergy[:, 0], HOSEnergy[:, 4] / ME_ref, 'k', label='HOS-Ocean solution')
+    # plt.plot(HOSEnergy[:, 0], HOSEnergy[:, 4] / ME_ref, 'k', label='HOS-Ocean solution')
+    plt.plot([0,1000],[1,1],'k',label='Energy conservation')
     plt.xlim(0, 1000)
     plt.xlabel('time [s]', fontsize=16)
     plt.ylabel('$E/E_0$', fontsize=16)
