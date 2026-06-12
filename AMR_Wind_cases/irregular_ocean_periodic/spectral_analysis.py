@@ -431,7 +431,7 @@ def _(
     plt.ylabel('$E/E_0$', fontsize=16)
     plt.legend()
     plt.title('Mechanical Energy Evolution')
-    plt.ylim([0.1, 1.1])
+    plt.ylim([0.1, 1.3])
     plt.savefig('plotting_outputs/Energy.png', format='png', bbox_inches='tight', dpi=300)
     return
 
