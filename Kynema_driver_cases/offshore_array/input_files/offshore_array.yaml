@@ -1,22 +1,22 @@
 
-exawind:
-  nalu_wind_inp:
-    - platform1_nalu.yaml
-    - platform2_nalu.yaml
-    - platform3_nalu.yaml
-    - platform4_nalu.yaml
-  amr_wind_inp: offshore_array_amr.inp
+kynema_driver:
+  kynema_ugf_inp:
+    - platform1_ugf.yaml
+    - platform2_ugf.yaml
+    - platform3_ugf.yaml
+    - platform4_ugf.yaml
+  kynema_sgf_inp: offshore_array_sgf.inp
   max_time: 3675
   additional_picard_iterations: 2
 
-  nalu_vars:
+  ugf_vars:
     - volume_of_fluid
     - velocity
     - density
     - pressure
-  amr_cell_vars:
+  sgf_cell_vars:
     - vof
     - velocity
     - density
-  amr_node_vars:
+  sgf_node_vars:
     - p
