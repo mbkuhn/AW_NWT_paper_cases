@@ -35,10 +35,8 @@ x4 = 0
 x5 = 0
 x6 = 0
 
-path_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/VofConvergenceData/vof/post_processing"
-ow_path_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/VofConvergenceData/ow_vof/post_processing"
-local_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/stokes_waves/5th_order_paper_runs_convergence/lev-"
-
+path_prefix = "../data/convergence/vof/post_processing"
+ow_path_prefix = "../data/convergence/ow_vof/post_processing"
 
 for n in 0:(nt-1)
 
@@ -75,7 +73,7 @@ for n in 0:(nt-1)
     global z4_list[n+1] = z4
 
     # vof, -1 level of ref
-    x_oo_5 = readdlm(local_prefix*"1/post_processing/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_5 = readdlm(path_prefix*"_m1levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_5 = x_oo_5[1:3]
     x_oo_5 = Float64.(x_oo_5)
     global x5 = x_oo_5[1]
@@ -83,7 +81,7 @@ for n in 0:(nt-1)
     global z5_list[n+1] = z5
 
     # vof, -2 level of ref
-    x_oo_6 = readdlm(local_prefix*"2/post_processing/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
+    x_oo_6 = readdlm(path_prefix*"_m2levs/sampling_fs_gauge" * lpad(string(n * out_int), 5, '0') * ".txt", ' '; skipstart=5)
     x_oo_6 = x_oo_6[1:3]
     x_oo_6 = Float64.(x_oo_6)
     global x6 = x_oo_6[1]
