@@ -35,9 +35,9 @@ x4 = 0
 x5 = 0
 x6 = 0
 
-path_prefix = "/Users/mkuhn/testruns_data/VofConvergenceData/vof/post_processing"
-ow_path_prefix = "/Users/mkuhn/testruns_data/VofConvergenceData/ow_vof/post_processing"
-local_prefix = "/Users/mkuhn/testruns_data/stokes_waves/5th_order_paper_runs_convergence/lev-"
+path_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/VofConvergenceData/vof/post_processing"
+ow_path_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/VofConvergenceData/ow_vof/post_processing"
+local_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/stokes_waves/5th_order_paper_runs_convergence/lev-"
 
 
 for n in 0:(nt-1)
@@ -111,12 +111,12 @@ diffs_zero_levs = (z1_list[times_idx] .- z4_list[times_idx])
 diffs_minus_1_levs = (z1_list[times_idx] .- z5_list[times_idx])
 diffs_minus_2_levs = (z1_list[times_idx] .- z6_list[times_idx])
 
-sum_err_two_levs = sum(abs.(diffs_two_levs))
-sum_err_one_levs = sum(abs.(diffs_one_levs))
-sum_err_zero_levs = sum(abs.(diffs_zero_levs))
-sum_err_minus_1_levs = sum(abs.(diffs_minus_1_levs))
-sum_err_minus_2_levs = sum(abs.(diffs_minus_2_levs))
-error_vec = [sum_err_minus_2_levs, sum_err_minus_1_levs, sum_err_zero_levs, sum_err_one_levs, sum_err_two_levs]
+mean_err_two_levs = mean(abs.(diffs_two_levs))
+mean_err_one_levs = mean(abs.(diffs_one_levs))
+mean_err_zero_levs = mean(abs.(diffs_zero_levs))
+mean_err_minus_1_levs = mean(abs.(diffs_minus_1_levs))
+mean_err_minus_2_levs = mean(abs.(diffs_minus_2_levs))
+error_vec = [mean_err_minus_2_levs, mean_err_minus_1_levs, mean_err_zero_levs, mean_err_one_levs, mean_err_two_levs]
 
 dx_minus_2 = 4.0*0.0625
 dx_minus_1 = 2.0*0.0625
@@ -163,6 +163,6 @@ norm_plot = plot(dx_vec, error_vec, marker = :circle, lw=2, color=:red, linestyl
 plot!(dx_vec,fit_errors,lw=2, linestyle = :dash,color=:black,label="1st order")
 #plot!(dx_vec,fit_errors2,lw=2, linestyle = :dot,color=:black,label="2nd order")
 xlabel!("\$\\Delta{x}\$ [m]")
-ylabel!("\$\\Sigma|\\eta_{\\mathrm{target}}(t) - \\eta(t)|\$ [m]")
+ylabel!("\$\\Sigma|\\eta_{\\mathrm{target}}(t) - \\eta(t)| / N\$ [m]")
 # title!("Shape Error \$(L_1)\$ at \$x=10\$ for \$t\\in[10,18]sec\$")
 savefig(norm_plot,"../plotting_outputs/norm_plot.pdf")
