@@ -94,7 +94,7 @@ stepRangeNalu = collect(1:length(NaluWave_time)) # include all of the Nalu time
 ### **** PSD COMPUTATIONS AND PLOTS ******
 # Fx
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[1][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
-F_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.3),ylims=(1e7,1e14),label="Jacket 1 - x",linestyle=:solid,color=:blue,legend=:topright)
+F_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.3),ylims=(1e7,1e14),label="Jacket 1 - x",linestyle=:solid,color=:blue,legend=:topright,legendfontsize=10)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[2][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Jacket 2 - x",linestyle=:solid,color=:red)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fx[3][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
@@ -124,13 +124,15 @@ plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label=:none,linestyle=:dot,color=:
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fz[4][stepRangeNalu] .- buoy,true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label=:none,linestyle=:dot,color=:black)
 
+vline!([1 / 12.25], label=L"1 / T_p", color=:black, linestyle=:dashdot)
+
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$F [N^2/Hz]\$")
 savefig(F_plot,"plotting_outputs/F_PSD.pdf")
 
 # Mx
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mx[1][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
-M_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.4),ylims=(1e9,1e17),label="Jacket 1 - x",legend=:topright,linestyle=:solid,color=:blue)
+M_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,xlims=(0,0.4),ylims=(1e9,1e17),label="Jacket 1 - x",legend=:topright,linestyle=:solid,color=:blue,legendfontsize=10)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mx[2][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Jacket 2 - x",linestyle=:solid,color=:red)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mx[3][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
@@ -157,6 +159,8 @@ f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mz[3
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="",linestyle=:dot,color=:green)
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mz[4][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="",linestyle=:dot,color=:black)
+
+vline!([1 / 12.25], label=L"1 / T_p", color=:black, linestyle=:dashdot)
 
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$M [(Nm)^2/Hz]\$")
