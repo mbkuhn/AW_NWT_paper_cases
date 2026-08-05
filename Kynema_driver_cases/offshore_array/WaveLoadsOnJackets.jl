@@ -124,7 +124,7 @@ plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label=:none,linestyle=:dot,color=:
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Fz[4][stepRangeNalu] .- buoy,true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label=:none,linestyle=:dot,color=:black)
 
-vline!([1 / 12.25], label=L"1 / T_p", color=:black, linestyle=:dashdot)
+vline!([1 / 12.25], label=L"1 / T_p", color=:darkorange, linestyle=:dashdot)
 
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$F [N^2/Hz]\$")
@@ -160,7 +160,7 @@ plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="",linestyle=:dot,color=:gre
 f, P1, PSD, fdouble, P2 = FFTAnalysis(NaluWave_time[stepRangeNalu],NaluWave_Mz[4][stepRangeNalu],true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="",linestyle=:dot,color=:black)
 
-vline!([1 / 12.25], label=L"1 / T_p", color=:black, linestyle=:dashdot)
+vline!([1 / 12.25], label=L"1 / T_p", color=:darkorange, linestyle=:dashdot)
 
 xlabel!("Frequency [Hz]")
 ylabel!("Global \$M [(Nm)^2/Hz]\$")
