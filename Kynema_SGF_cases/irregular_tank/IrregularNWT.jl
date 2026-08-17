@@ -45,17 +45,31 @@ amrwind_data = Float64.(amrwind_data)
 amrwind_time = amrwind_data[:,1]
 amrwind_wave = amrwind_data[:,4]
 
+# Experiment
+file_exp = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/OC6_PhaseIa_dataset_and_more/OC6_LC33_LC53_CFD_scripts_data/LC33_FixedStructure/ZXP0_LC33_full.txt"
+ZXP0_data = readdlm(file_exp)
+ZXP0_data = ZXP0_data[2001:end,:]
+ZXP0_data = Float64.(ZXP0_data)
+ZXP0_data[:,1] = ZXP0_data[:,1].-200 # "." dot is to subtract elementwise for the column
+EXP_time = ZXP0_data[:,1]
+EXP_wave = ZXP0_data[:,2]
+
 # Plot Waves Time series (Model Scale)
-Time_series_plot = plot(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT", color=:black)
+rescaling = 50.
+Time_series_plot = plot(EXP_time./sqrt(rescaling),EXP_wave./(rescaling),label="Experiment",color=:black)
+plot!(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,label="HOS-NWT", color=:blue)
 plot!(amrwind_time,amrwind_wave,label="Kynema-SGF", color=:red, linestyle=:dot)
 xlabel!("Time [sec]")
 ylabel!("Wave Elevation [m]")
 savefig(Time_series_plot,"plotting_outputs/wave_elevation_time_series.pdf")
 
 ### **** PSD COMPUTATIONS AND PLOTS ******
+stepRange = collect(3000:108000)
+f, P1, PSD, fdouble, P2 = FFTAnalysis(EXP_time[stepRange]./sqrt(rescaling),EXP_wave[stepRange]./rescaling,true,false,smoothing_type,smoothing_parameter)
+wave_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,ylims=(1e-7,1e-2),label="Experiment",xlims=(0,1.5),color=:black,linewidth=2)
 
 f, P1, PSD, fdouble, P2 = FFTAnalysis(HOS_NWT_Case4_time,HOS_NWT_Case4_wave,true,false,smoothing_type,smoothing_parameter)
-wave_plot = plot(f[1:end],abs.(PSD[1:end]),yscale=:log10,ylims=(1e-7,1e-2),xlims=(0,1.5),label="HOS-NWT",color=:black,linewidth=2)
+plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="HOS-NWT",color=:blue,linewidth=2)
 
 dt_array = zeros(length(amrwind_data[:,1]))
 for ii=1:length(dt_array)-1
@@ -73,6 +87,7 @@ AMRWind_Wave = amrwind_wave_evenly_spaced
 
 f, P1, PSD, fdouble, P2 = FFTAnalysis(AMRWind_time,AMRWind_Wave,true,false,smoothing_type,smoothing_parameter)
 plot!(f[1:end],abs.(PSD[1:end]),yscale=:log10,label="Kynema-SGF",color=:red,linestyle=:dot,linewidth=2)
+
 xlabel!("Frequency [Hz]")
 ylabel!("PSD of Incident Wave [m\$^2\$/Hz]")
 savefig(wave_plot,"plotting_outputs/wave_PSD.pdf")
