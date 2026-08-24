@@ -10,34 +10,12 @@ using Printf
 using Images
 using LinearAlgebra
 
-# choose case (1, 2, 3)
-icase = 3
 
-# physical parameters for simulation
-wave_length  = 4. # meters
-wave_min     = 0.0 # expected peak
-wave_max     = 0.0 # expected trough
-wave_height  = 0.0 # (specified later)
-wave_period  = 1.6 # seconds
-wave_number  = 2*pi/wave_length # meters^-1
-wave_frequency = 1/wave_period # Hertz. Note: this is the fundamental frequency: the peaks of the signal will be observed here
-angular_frequency = 2*pi*wave_frequency # rad/sec
-zero_sea_level = 0.0 # meters
-water_depth = 18.0 # meters
 dt_phys = 0.001 # seconds
-box_length= 24.0 # meters
-rel_gen_length = 2*wave_length # 2 wavelengths for longer domain
-
-# getting the data from the gauges
-initial_time = 5.2
-final_time = 5.5 # seconds
 out_int = 10 # sampling frequency 
 dt = dt_phys*out_int
 
-path_prefix = "/Users/mkuhn/Library/CloudStorage/OneDrive-NLR/testruns_data/MKuhn_regularwavesdata/"
-
-# plot wave elevation at different times
-x_oo = readdlm(path_prefix * "/FifthOrder/post_processing/sampling_fs_domain" * lpad(string(Int(5.5 / dt_phys)), 5, '0') * ".txt", ' '; skipstart=5)
+x_oo = readdlm("sample_wave_data.txt", ' '; skipstart=5)
 x_oo = x_oo[:,1:3]
 x_oo = Float64.(x_oo)
 x_oo = x_oo[sortperm(x_oo[:, 1]), :] # reordering array
