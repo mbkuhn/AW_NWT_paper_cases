@@ -44,6 +44,9 @@ def main():
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
     plt.savefig("plots/Gamma_g.png", dpi=300)
 
     plt.figure(figsize=(4, 3))
@@ -55,6 +58,9 @@ def main():
     plt.grid(True, alpha=0.3)
     plt.legend()
     plt.tight_layout()
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
     plt.savefig("plots/Gamma_r.png", dpi=300)
 
 
