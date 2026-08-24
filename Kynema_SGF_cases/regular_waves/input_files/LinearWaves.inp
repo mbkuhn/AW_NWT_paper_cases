@@ -51,10 +51,7 @@ MultiPhase.verbose                              = 1
 #¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨¨#
 #              PROJECTIONS              #
 #.......................................#
-nodal_proj.max_coarsening_level = 2
-nodal_proj.bottom_solver = hypre
 nodal_proj.bottom_atol = 1e-14
-mac_proj.bottom_solver = hypre
 mac_proj.bottom_atol = 1e-14
 
 
